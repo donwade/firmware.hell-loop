@@ -66,9 +66,6 @@ CYSFTX     ysfTX;
 CP25RX     p25RX;
 CP25TX     p25TX;
 
-CM17RX     m17RX;
-CM17TX     m17TX;
-
 CNXDNRX    nxdnRX;
 CNXDNTX    nxdnTX;
 
@@ -118,9 +115,6 @@ void loop()
 
   if (m_nxdnEnable && m_modemState == STATE_NXDN)
     nxdnTX.process();
-
-  if (m_m17Enable && m_modemState == STATE_M17)
-    m17TX.process();
 
   if (m_pocsagEnable && (m_modemState == STATE_POCSAG || pocsagTX.busy()))
     pocsagTX.process();

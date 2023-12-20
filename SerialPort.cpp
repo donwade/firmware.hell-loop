@@ -204,10 +204,8 @@ void CSerialPort::getStatus()
   else
     reply[12U] = 0U;
 
-  if (m_m17Enable)
-    reply[13U] = m17TX.getSpace();
-  else
-    reply[13U] = 0U;
+  //reply[13U] = m17TX.getSpace();
+  reply[13U] = 0U;
 
   writeInt(1U, reply, 14);
 }
@@ -261,7 +259,7 @@ uint8_t CSerialPort::setConfig(const uint8_t* data, uint8_t length)
 
   MMDVM_STATE modemState = MMDVM_STATE(data[3U]);
 
-  if (modemState != STATE_IDLE && modemState != STATE_DSTAR && modemState != STATE_DMR && modemState != STATE_YSF && modemState != STATE_P25 && modemState != STATE_NXDN && modemState != STATE_M17 && modemState != STATE_POCSAG && modemState != STATE_DSTARCAL && modemState != STATE_DMRCAL && modemState != STATE_DMRDMO1K && modemState != STATE_INTCAL && modemState != STATE_RSSICAL && modemState != STATE_POCSAGCAL)
+  if (modemState != STATE_IDLE && modemState != STATE_DSTAR && modemState != STATE_DMR && modemState != STATE_YSF && modemState != STATE_P25 && modemState != STATE_NXDN && modemState != STATE_POCSAG && modemState != STATE_DSTARCAL && modemState != STATE_DMRCAL && modemState != STATE_DMRDMO1K && modemState != STATE_INTCAL && modemState != STATE_RSSICAL && modemState != STATE_POCSAGCAL)
     return 4U;
   if (modemState == STATE_DSTAR && !dstarEnable)
     return 4U;
@@ -274,8 +272,6 @@ uint8_t CSerialPort::setConfig(const uint8_t* data, uint8_t length)
   if (modemState == STATE_NXDN && !nxdnEnable)
     return 4U;
   if (modemState == STATE_POCSAG && !pocsagEnable)
-    return 4U;
-  if (modemState == STATE_M17 && !m17Enable)
     return 4U;
 
   uint8_t colorCode = data[6U];
@@ -294,9 +290,8 @@ uint8_t CSerialPort::setConfig(const uint8_t* data, uint8_t length)
   uint8_t p25TXLevel    = data[12U];
   uint8_t nxdnTXLevel   = data[15U];
   uint8_t pocsagTXLevel = data[17U];
-  uint8_t m17TXLevel    = data[21U];
 
-  io.setDeviations(dstarTXLevel, dmrTXLevel, ysfTXLevel, p25TXLevel, nxdnTXLevel, m17TXLevel, pocsagTXLevel, ysfLoDev);
+  io.setDeviations(dstarTXLevel, dmrTXLevel, ysfTXLevel, p25TXLevel, nxdnTXLevel, pocsagTXLevel, ysfLoDev);
 
   m_dstarEnable  = dstarEnable;
   m_dmrEnable    = dmrEnable;
@@ -344,7 +339,6 @@ uint8_t CSerialPort::setConfig(const uint8_t* data, uint8_t length)
   ysfTX.setTXDelay(txDelay);
   p25TX.setTXDelay(txDelay);
   nxdnTX.setTXDelay(txDelay);
-  m17TX.setTXDelay(txDelay);
   pocsagTX.setTXDelay(txDelay);
   dmrDMOTX.setTXDelay(txDelay);
 
@@ -398,7 +392,7 @@ uint8_t CSerialPort::setMode(const uint8_t* data, uint8_t length)
   if (modemState == m_modemState)
     return 0U;
 
-  if (modemState != STATE_IDLE && modemState != STATE_DSTAR && modemState != STATE_DMR && modemState != STATE_YSF && modemState != STATE_P25 && modemState != STATE_NXDN && modemState != STATE_M17 && modemState != STATE_POCSAG && modemState != STATE_DSTARCAL && modemState != STATE_DMRCAL && modemState != STATE_DMRDMO1K && modemState != STATE_RSSICAL && modemState != STATE_INTCAL && modemState != STATE_POCSAGCAL)
+  if (modemState != STATE_IDLE && modemState != STATE_DSTAR && modemState != STATE_DMR && modemState != STATE_YSF && modemState != STATE_P25 && modemState != STATE_NXDN && modemState != STATE_POCSAG && modemState != STATE_DSTARCAL && modemState != STATE_DMRCAL && modemState != STATE_DMRDMO1K && modemState != STATE_RSSICAL && modemState != STATE_INTCAL && modemState != STATE_POCSAGCAL)
     return 4U;
   if (modemState == STATE_DSTAR && !m_dstarEnable)
     return 4U;
@@ -409,8 +403,6 @@ uint8_t CSerialPort::setMode(const uint8_t* data, uint8_t length)
   if (modemState == STATE_P25 && !m_p25Enable)
     return 4U;
   if (modemState == STATE_NXDN && !m_nxdnEnable)
-    return 4U;
-  if (modemState == STATE_M17 && !m_m17Enable)
     return 4U;
   if (modemState == STATE_POCSAG && !m_pocsagEnable)
     return 4U;
@@ -486,7 +478,7 @@ void CSerialPort::setMode(MMDVM_STATE modemState)
       ysfRX.reset();
       p25RX.reset();
       nxdnRX.reset();
-      m17RX.reset();
+      
       cwIdTX.reset();
       break;
     case STATE_DSTAR:
@@ -499,7 +491,7 @@ void CSerialPort::setMode(MMDVM_STATE modemState)
       ysfRX.reset();
       p25RX.reset();
       nxdnRX.reset();
-      m17RX.reset();
+      
       cwIdTX.reset();
       break;
     case STATE_YSF:
@@ -512,7 +504,7 @@ void CSerialPort::setMode(MMDVM_STATE modemState)
       dstarRX.reset();
       p25RX.reset();
       nxdnRX.reset();
-      m17RX.reset();
+      
       cwIdTX.reset();
       break;
     case STATE_P25:
@@ -525,7 +517,7 @@ void CSerialPort::setMode(MMDVM_STATE modemState)
       dstarRX.reset();
       ysfRX.reset();
       nxdnRX.reset();
-      m17RX.reset();
+      
       cwIdTX.reset();
       break;
     case STATE_NXDN:
@@ -538,20 +530,7 @@ void CSerialPort::setMode(MMDVM_STATE modemState)
       dstarRX.reset();
       ysfRX.reset();
       p25RX.reset();
-      m17RX.reset();
-      cwIdTX.reset();
-      break;
-    case STATE_M17:
-      DEBUG1("Mode set to M17");
-#if defined(DUPLEX)
-      dmrIdleRX.reset();
-      dmrRX.reset();
-#endif
-      dmrDMORX.reset();
-      dstarRX.reset();
-      ysfRX.reset();
-      p25RX.reset();
-      nxdnRX.reset();
+      
       cwIdTX.reset();
       break;
     case STATE_POCSAG:
@@ -565,7 +544,7 @@ void CSerialPort::setMode(MMDVM_STATE modemState)
       ysfRX.reset();
       p25RX.reset();
       nxdnRX.reset();
-      m17RX.reset();
+      
       cwIdTX.reset();
       break;
     default:
@@ -863,48 +842,6 @@ void CSerialPort::process()
                 setMode(STATE_NXDN);
             } else {
               DEBUG2("Received invalid NXDN data", err);
-              sendNAK(err);
-            }
-            break;
-
-          case MMDVM_M17_LINK_SETUP:
-            if (m_m17Enable) {
-              if (m_modemState == STATE_IDLE || m_modemState == STATE_M17)
-                err = m17TX.writeData(m_buffer + 3U, m_len - 3U);
-            }
-            if (err == 0U) {
-              if (m_modemState == STATE_IDLE)
-                setMode(STATE_M17);
-            } else {
-              DEBUG2("Received invalid M17 link setup data", err);
-              sendNAK(err);
-            }
-            break;
-
-          case MMDVM_M17_STREAM:
-            if (m_m17Enable) {
-              if (m_modemState == STATE_IDLE || m_modemState == STATE_M17)
-                err = m17TX.writeData(m_buffer + 3U, m_len - 3U);
-            }
-            if (err == 0U) {
-              if (m_modemState == STATE_IDLE)
-                setMode(STATE_M17);
-            } else {
-              DEBUG2("Received invalid M17 stream data", err);
-              sendNAK(err);
-            }
-            break;
-
-          case MMDVM_M17_EOT:
-            if (m_m17Enable) {
-              if (m_modemState == STATE_IDLE || m_modemState == STATE_M17)
-                err = m17TX.writeData(m_buffer + 3U, m_len - 3U);
-            }
-            if (err == 0U) {
-              if (m_modemState == STATE_IDLE)
-                setMode(STATE_M17);
-            } else {
-              DEBUG2("Received invalid M17 EOT", err);
               sendNAK(err);
             }
             break;
@@ -1260,86 +1197,6 @@ void CSerialPort::writeNXDNLost()
   reply[0U] = MMDVM_FRAME_START;
   reply[1U] = 3U;
   reply[2U] = MMDVM_NXDN_LOST;
-
-  writeInt(1U, reply, 3);
-}
-
-void CSerialPort::writeM17LinkSetup(const uint8_t* data, uint8_t length)
-{
-  if (m_modemState != STATE_M17 && m_modemState != STATE_IDLE)
-    return;
-
-  if (!m_m17Enable)
-    return;
-
-  uint8_t reply[130U];
-
-  reply[0U] = MMDVM_FRAME_START;
-  reply[1U] = 0U;
-  reply[2U] = MMDVM_M17_LINK_SETUP;
-
-  uint8_t count = 3U;
-  for (uint8_t i = 0U; i < length; i++, count++)
-    reply[count] = data[i];
-
-  reply[1U] = count;
-
-  writeInt(1U, reply, count);
-}
-
-void CSerialPort::writeM17Stream(const uint8_t* data, uint8_t length)
-{
-  if (m_modemState != STATE_M17 && m_modemState != STATE_IDLE)
-    return;
-
-  if (!m_m17Enable)
-    return;
-
-  uint8_t reply[130U];
-
-  reply[0U] = MMDVM_FRAME_START;
-  reply[1U] = 0U;
-  reply[2U] = MMDVM_M17_STREAM;
-
-  uint8_t count = 3U;
-  for (uint8_t i = 0U; i < length; i++, count++)
-    reply[count] = data[i];
-
-  reply[1U] = count;
-
-  writeInt(1U, reply, count);
-}
-
-void CSerialPort::writeM17EOT()
-{
-  if (m_modemState != STATE_M17 && m_modemState != STATE_IDLE)
-    return;
-
-  if (!m_m17Enable)
-    return;
-
-  uint8_t reply[3U];
-
-  reply[0U] = MMDVM_FRAME_START;
-  reply[1U] = 3U;
-  reply[2U] = MMDVM_M17_EOT;
-
-  writeInt(1U, reply, 3);
-}
-
-void CSerialPort::writeM17Lost()
-{
-  if (m_modemState != STATE_M17 && m_modemState != STATE_IDLE)
-    return;
-
-  if (!m_m17Enable)
-    return;
-
-  uint8_t reply[3U];
-
-  reply[0U] = MMDVM_FRAME_START;
-  reply[1U] = 3U;
-  reply[2U] = MMDVM_M17_LOST;
 
   writeInt(1U, reply, 3);
 }

@@ -148,7 +148,7 @@ public:
 #endif
   void      start(void);
   void      startInt(void);
-  void      setDeviations(uint8_t dstarTXLevel, uint8_t dmrTXLevel, uint8_t ysfTXLevel, uint8_t p25TXLevel, uint8_t nxdnTXLevel, uint8_t m17TXLevel, uint8_t pocsagTXLevel, bool ysfLoDev);
+  void      setDeviations(uint8_t dstarTXLevel, uint8_t dmrTXLevel, uint8_t ysfTXLevel, uint8_t p25TXLevel, uint8_t nxdnTXLevel, uint8_t pocsagTXLevel, bool ysfLoDev);
   void      updateCal(void);
 
 #if defined(SEND_RSSI_DATA)

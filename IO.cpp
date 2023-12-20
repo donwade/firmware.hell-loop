@@ -113,7 +113,7 @@ void CIO::process()
   if (m_started) {
     // Two seconds timeout
     if (m_watchdog >= 19200U) {
-      if (m_modemState == STATE_DSTAR || m_modemState == STATE_DMR || m_modemState == STATE_YSF || m_modemState == STATE_P25 || m_modemState == STATE_NXDN || m_modemState == STATE_M17) {
+      if (m_modemState == STATE_DSTAR || m_modemState == STATE_DMR || m_modemState == STATE_YSF || m_modemState == STATE_P25 || m_modemState == STATE_NXDN ) {
         m_modemState = STATE_IDLE;
         setMode(m_modemState);
       }
@@ -180,8 +180,6 @@ void CIO::process()
     scantime = SCAN_TIME;
   else if(m_modemState_prev == STATE_NXDN)
     scantime = SCAN_TIME;
-  else if(m_modemState_prev == STATE_M17)
-    scantime = SCAN_TIME;
   else
     scantime = SCAN_TIME;
 
@@ -225,9 +223,6 @@ void CIO::process()
       case STATE_NXDN:
         nxdnRX.databit(bit);
         break;
-      case STATE_M17:
-        m17RX.databit(bit);
-        break;
       default:
         break;
     }
@@ -257,10 +252,6 @@ void CIO::start()
   }
   if(m_nxdnEnable) {
     m_Modes[m_TotalModes] = STATE_NXDN;
-    m_TotalModes++;
-  }
-  if(m_m17Enable) {
-    m_Modes[m_TotalModes] = STATE_M17;
     m_TotalModes++;
   }
 
@@ -423,14 +414,6 @@ void CIO::setMode(MMDVM_STATE modemState)
 #if defined(USE_ALTERNATE_NXDN_LEDS)
   }
 #endif
-#if defined(USE_ALTERNATE_M17_LEDS)
-  if (modemState != STATE_M17) {
-#endif
-    LED_YSF_AMBER(modemState    == STATE_YSF);
-    LED_P25_RED(modemState    == STATE_P25);
-#if defined(USE_ALTERNATE_M17_LEDS)
-  }
-#endif
 #if defined(USE_ALTERNATE_NXDN_LEDS)
   if (modemState != STATE_YSF && modemState != STATE_P25) {
 #endif
@@ -443,13 +426,6 @@ void CIO::setMode(MMDVM_STATE modemState)
 #endif
     LED_POCSAG_BLUE(modemState == STATE_POCSAG);
 #if defined(USE_ALTERNATE_POCSAG_LEDS)
-  }
-#endif
-#if defined(USE_ALTERNATE_M17_LEDS)
-  if (modemState != STATE_DSTAR && modemState != STATE_P25) {
-#endif
-    LED_M17_BLUE(modemState   == STATE_M17);
-#if defined(USE_ALTERNATE_M17_LEDS)
   }
 #endif
 }

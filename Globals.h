@@ -78,8 +78,8 @@ const uint8_t  MARK_NONE  = 0x00U;
 #include "YSFTX.h"
 #include "P25RX.h"
 #include "P25TX.h"
-#include "M17RX.h"
-#include "M17TX.h"
+
+
 #include "NXDNRX.h"
 #include "NXDNTX.h"
 #include "POCSAGTX.h"
@@ -137,8 +137,8 @@ extern CYSFTX ysfTX;
 extern CP25RX p25RX;
 extern CP25TX p25TX;
 
-extern CM17RX m17RX;
-extern CM17TX m17TX;
+
+
 
 extern CNXDNRX nxdnRX;
 extern CNXDNTX nxdnTX;
