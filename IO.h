@@ -126,7 +126,6 @@ public:
   void      setPower(uint8_t power);
   void      setMode(MMDVM_STATE modemState);
   void      setDecode(bool dcd);
-  void      setLoDevYSF(bool ysfLoDev);
   void      resetWatchdog(void);
   uint32_t  getWatchdog(void);
   void      getIntCounter(uint16_t &int1, uint16_t &int2);
@@ -148,7 +147,7 @@ public:
 #endif
   void      start(void);
   void      startInt(void);
-  void      setDeviations(uint8_t dstarTXLevel, uint8_t dmrTXLevel, uint8_t ysfTXLevel, uint8_t p25TXLevel, uint8_t nxdnTXLevel, uint8_t pocsagTXLevel, bool ysfLoDev);
+  void      setDeviations(uint8_t dstarTXLevel, uint8_t dmrTXLevel, uint8_t p25TXLevel, uint8_t nxdnTXLevel, uint8_t pocsagTXLevel);
   void      updateCal(void);
 
 #if defined(SEND_RSSI_DATA)
@@ -166,10 +165,8 @@ public:
   uint32_t  TXfreq(void);
   uint16_t  devDSTAR(void);
   uint16_t  devDMR(void);
-  uint16_t  devYSF(void);
   uint16_t  devP25(void);
   uint16_t  devNXDN(void);
-  uint16_t  devM17(void);
   uint16_t  devPOCSAG(void);
   void      printConf();
 #endif
@@ -183,7 +180,6 @@ private:
   bool               m_started;
   CBitRB             m_rxBuffer;
   CBitRB             m_txBuffer;
-  bool               m_LoDevYSF;
   uint32_t           m_ledCount;
   bool               m_scanEnable;
   uint32_t           m_scanPauseCnt;

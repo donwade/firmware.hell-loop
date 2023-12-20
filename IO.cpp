@@ -31,7 +31,6 @@ CIO::CIO():
 m_started(false),
 m_rxBuffer(1024U),
 m_txBuffer(1024U),
-m_LoDevYSF(false),
 m_ledCount(0U),
 m_scanEnable(false),
 m_scanPauseCnt(0U),
@@ -113,7 +112,7 @@ void CIO::process()
   if (m_started) {
     // Two seconds timeout
     if (m_watchdog >= 19200U) {
-      if (m_modemState == STATE_DSTAR || m_modemState == STATE_DMR || m_modemState == STATE_YSF || m_modemState == STATE_P25 || m_modemState == STATE_NXDN ) {
+      if (m_modemState == STATE_DSTAR || m_modemState == STATE_DMR || m_modemState == STATE_P25 || m_modemState == STATE_NXDN ) {
         m_modemState = STATE_IDLE;
         setMode(m_modemState);
       }
@@ -174,8 +173,6 @@ void CIO::process()
     scantime = SCAN_TIME;
   else if(m_modemState_prev == STATE_DMR)
     scantime = SCAN_TIME * 2U;
-  else if(m_modemState_prev == STATE_YSF)
-    scantime = SCAN_TIME;
   else if(m_modemState_prev == STATE_P25)
     scantime = SCAN_TIME;
   else if(m_modemState_prev == STATE_NXDN)
@@ -214,9 +211,6 @@ void CIO::process()
         dmrDMORX.databit(bit);
 #endif
         break;
-      case STATE_YSF:
-        ysfRX.databit(bit);
-        break;
       case STATE_P25:
         p25RX.databit(bit);
         break;
@@ -240,10 +234,6 @@ void CIO::start()
   }
   if(m_dmrEnable) {
     m_Modes[m_TotalModes] = STATE_DMR;
-    m_TotalModes++;
-  }
-  if(m_ysfEnable) {
-    m_Modes[m_TotalModes] = STATE_YSF;
     m_TotalModes++;
   }
   if(m_p25Enable) {
@@ -409,13 +399,12 @@ void CIO::setMode(MMDVM_STATE modemState)
 #if defined(USE_ALTERNATE_NXDN_LEDS)
   if (modemState != STATE_NXDN) {
 #endif
-    LED_YSF_AMBER(modemState    == STATE_YSF);
     LED_P25_RED(modemState    == STATE_P25);
 #if defined(USE_ALTERNATE_NXDN_LEDS)
   }
 #endif
 #if defined(USE_ALTERNATE_NXDN_LEDS)
-  if (modemState != STATE_YSF && modemState != STATE_P25) {
+  if (modemState != STATE_P25) {
 #endif
     LED_NXDN_BLUE(modemState   == STATE_NXDN);
 #if defined(USE_ALTERNATE_NXDN_LEDS)
@@ -438,11 +427,6 @@ void CIO::setDecode(bool dcd)
   }
 
   m_dcd = dcd;
-}
-
-void CIO::setLoDevYSF(bool on)
-{
-  m_LoDevYSF = on;
 }
 
 void CIO::resetWatchdog()

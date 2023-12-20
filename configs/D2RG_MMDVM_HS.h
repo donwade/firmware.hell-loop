@@ -54,7 +54,7 @@
 #define AD7021_GAIN_AUTO
 // AGC automatic with high LNA linearity:
 // #define AD7021_GAIN_AUTO_LIN
-// AGC OFF, lowest gain: 
+// AGC OFF, lowest gain:
 // #define AD7021_GAIN_LOW
 // AGC OFF, highest gain:
 // #define AD7021_GAIN_HIGH
@@ -86,13 +86,13 @@
 // Disable mode LEDs blink during scan mode:
 // #define QUIET_MODE_LEDS
 
-// Engage a constant or descreet Service LED mode once repeater is running 
+// Engage a constant or descreet Service LED mode once repeater is running
 // #define CONSTANT_SRV_LED
 // #define CONSTANT_SRV_LED_INVERTED
 // #define DISCREET_SRV_LED
 // #define DISCREET_SRV_LED_INVERTED
 
-// Use the YSF and P25 LEDs for NXDN
+// Use the P25 LEDs for NXDN
 // #define USE_ALTERNATE_NXDN_LEDS
 
 // Use the D-Star and P25 LEDs for M17

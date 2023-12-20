@@ -40,10 +40,8 @@ uint32_t m_modeTimerCnt;
 
 bool m_dstarEnable  = true;
 bool m_dmrEnable    = true;
-bool m_ysfEnable    = true;
 bool m_p25Enable    = true;
 bool m_nxdnEnable   = true;
-bool m_m17Enable    = true;
 bool m_pocsagEnable = true;
 
 bool m_duplex = false;
@@ -65,8 +63,8 @@ CDMRTX     dmrTX;
 CDMRDMORX  dmrDMORX;
 CDMRDMOTX  dmrDMOTX;
 
-CYSFRX     ysfRX;
-CYSFTX     ysfTX;
+
+
 
 CP25RX     p25RX;
 CP25TX     p25TX;
@@ -119,9 +117,6 @@ void loop()
     dmrDMOTX.process();
 #endif
   }
-
-  if (m_ysfEnable && m_modemState == STATE_YSF)
-    ysfTX.process();
 
   if (m_p25Enable && m_modemState == STATE_P25)
     p25TX.process();

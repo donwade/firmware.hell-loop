@@ -140,16 +140,12 @@ void CSerialPort::getStatus()
     reply[3U] |= 0x01U;
   if (m_dmrEnable)
     reply[3U] |= 0x02U;
-  if (m_ysfEnable)
-    reply[3U] |= 0x04U;
   if (m_p25Enable)
     reply[3U] |= 0x08U;
   if (m_nxdnEnable)
     reply[3U] |= 0x10U;
   if (m_pocsagEnable)
     reply[3U] |= 0x20U;
-  if (m_m17Enable)
-    reply[3U] |= 0x80U;
 
   reply[4U]  = uint8_t(m_modemState);
 
@@ -184,10 +180,8 @@ void CSerialPort::getStatus()
     reply[8U] = 0U;
   }
 
-  if (m_ysfEnable)
-    reply[9U] = ysfTX.getSpace();
-  else
-    reply[9U] = 0U;
+  //reply[9U] = ysfTX.getSpace();
+  reply[9U] = 0U;
 
   if (m_p25Enable)
     reply[10U] = p25TX.getSpace();
@@ -240,18 +234,15 @@ uint8_t CSerialPort::setConfig(const uint8_t* data, uint8_t length)
   if (length < 23U)
     return 4U;
 
-  bool ysfLoDev  = (data[0U] & 0x08U) == 0x08U;
   bool simplex   = (data[0U] & 0x80U) == 0x80U;
 
   m_debug = (data[0U] & 0x10U) == 0x10U;
 
   bool dstarEnable  = (data[1U] & 0x01U) == 0x01U;
   bool dmrEnable    = (data[1U] & 0x02U) == 0x02U;
-  bool ysfEnable    = (data[1U] & 0x04U) == 0x04U;
   bool p25Enable    = (data[1U] & 0x08U) == 0x08U;
   bool nxdnEnable   = (data[1U] & 0x10U) == 0x10U;
   bool pocsagEnable = (data[1U] & 0x20U) == 0x20U;
-  bool m17Enable    = (data[1U] & 0x40U) == 0x40U;
 
   uint8_t txDelay = data[2U];
   if (txDelay > 50U)
@@ -264,8 +255,6 @@ uint8_t CSerialPort::setConfig(const uint8_t* data, uint8_t length)
   if (modemState == STATE_DSTAR && !dstarEnable)
     return 4U;
   if (modemState == STATE_DMR && !dmrEnable)
-    return 4U;
-  if (modemState == STATE_YSF && !ysfEnable)
     return 4U;
   if (modemState == STATE_P25 && !p25Enable)
     return 4U;
@@ -286,19 +275,16 @@ uint8_t CSerialPort::setConfig(const uint8_t* data, uint8_t length)
 
   uint8_t dstarTXLevel  = data[9U];
   uint8_t dmrTXLevel    = data[10U];
-  uint8_t ysfTXLevel    = data[11U];
   uint8_t p25TXLevel    = data[12U];
   uint8_t nxdnTXLevel   = data[15U];
   uint8_t pocsagTXLevel = data[17U];
 
-  io.setDeviations(dstarTXLevel, dmrTXLevel, ysfTXLevel, p25TXLevel, nxdnTXLevel, pocsagTXLevel, ysfLoDev);
+  io.setDeviations(dstarTXLevel, dmrTXLevel, p25TXLevel, nxdnTXLevel, pocsagTXLevel);
 
   m_dstarEnable  = dstarEnable;
   m_dmrEnable    = dmrEnable;
-  m_ysfEnable    = ysfEnable;
   m_p25Enable    = p25Enable;
   m_nxdnEnable   = nxdnEnable;
-  m_m17Enable    = m17Enable;
   m_pocsagEnable = pocsagEnable;
 
   if (modemState == STATE_DMRCAL || modemState == STATE_DMRDMO1K || modemState == STATE_RSSICAL || modemState == STATE_INTCAL) {
@@ -336,7 +322,6 @@ uint8_t CSerialPort::setConfig(const uint8_t* data, uint8_t length)
 #endif
 
   dstarTX.setTXDelay(txDelay);
-  ysfTX.setTXDelay(txDelay);
   p25TX.setTXDelay(txDelay);
   nxdnTX.setTXDelay(txDelay);
   pocsagTX.setTXDelay(txDelay);
@@ -351,15 +336,11 @@ uint8_t CSerialPort::setConfig(const uint8_t* data, uint8_t length)
 
   dmrDMORX.setColorCode(colorCode);
 
-  io.setLoDevYSF(ysfLoDev);
-
   if (!m_firstCal || (modemState != STATE_DMRCAL && modemState != STATE_DMRDMO1K && modemState != STATE_RSSICAL && modemState != STATE_INTCAL && modemState != STATE_POCSAGCAL)) {
     if(m_dstarEnable)
       io.ifConf(STATE_DSTAR, true);
     else if(m_dmrEnable)
       io.ifConf(STATE_DMR, true);
-    else if(m_ysfEnable)
-      io.ifConf(STATE_YSF, true);
     else if(m_p25Enable)
       io.ifConf(STATE_P25, true);
     else if(m_nxdnEnable)
@@ -390,13 +371,11 @@ uint8_t CSerialPort::setMode(const uint8_t* data, uint8_t length)
   if (modemState == m_modemState)
     return 0U;
 
-  if (modemState != STATE_IDLE && modemState != STATE_DSTAR && modemState != STATE_DMR && modemState != STATE_YSF && modemState != STATE_P25 && modemState != STATE_NXDN && modemState != STATE_POCSAG && modemState != STATE_DSTARCAL && modemState != STATE_DMRCAL && modemState != STATE_DMRDMO1K && modemState != STATE_RSSICAL && modemState != STATE_INTCAL && modemState != STATE_POCSAGCAL)
+  if (modemState != STATE_IDLE && modemState != STATE_DSTAR && modemState != STATE_DMR && modemState != STATE_P25 && modemState != STATE_NXDN && modemState != STATE_POCSAG && modemState != STATE_DSTARCAL && modemState != STATE_DMRCAL && modemState != STATE_DMRDMO1K && modemState != STATE_RSSICAL && modemState != STATE_INTCAL && modemState != STATE_POCSAGCAL)
     return 4U;
   if (modemState == STATE_DSTAR && !m_dstarEnable)
     return 4U;
   if (modemState == STATE_DMR && !m_dmrEnable)
-    return 4U;
-  if (modemState == STATE_YSF && !m_ysfEnable)
     return 4U;
   if (modemState == STATE_P25 && !m_p25Enable)
     return 4U;
@@ -473,10 +452,10 @@ void CSerialPort::setMode(MMDVM_STATE modemState)
     case STATE_DMR:
       DEBUG1("Mode set to DMR");
       dstarRX.reset();
-      ysfRX.reset();
+      
       p25RX.reset();
       nxdnRX.reset();
-      
+
       cwIdTX.reset();
       break;
     case STATE_DSTAR:
@@ -486,23 +465,10 @@ void CSerialPort::setMode(MMDVM_STATE modemState)
       dmrRX.reset();
 #endif
       dmrDMORX.reset();
-      ysfRX.reset();
+      
       p25RX.reset();
       nxdnRX.reset();
-      
-      cwIdTX.reset();
-      break;
-    case STATE_YSF:
-      DEBUG1("Mode set to System Fusion");
-#if defined(DUPLEX)
-      dmrIdleRX.reset();
-      dmrRX.reset();
-#endif
-      dmrDMORX.reset();
-      dstarRX.reset();
-      p25RX.reset();
-      nxdnRX.reset();
-      
+
       cwIdTX.reset();
       break;
     case STATE_P25:
@@ -513,9 +479,9 @@ void CSerialPort::setMode(MMDVM_STATE modemState)
 #endif
       dmrDMORX.reset();
       dstarRX.reset();
-      ysfRX.reset();
-      nxdnRX.reset();
       
+      nxdnRX.reset();
+
       cwIdTX.reset();
       break;
     case STATE_NXDN:
@@ -526,9 +492,9 @@ void CSerialPort::setMode(MMDVM_STATE modemState)
 #endif
       dmrDMORX.reset();
       dstarRX.reset();
-      ysfRX.reset();
-      p25RX.reset();
       
+      p25RX.reset();
+
       cwIdTX.reset();
       break;
     case STATE_POCSAG:
@@ -539,10 +505,10 @@ void CSerialPort::setMode(MMDVM_STATE modemState)
 #endif
       dmrDMORX.reset();
       dstarRX.reset();
-      ysfRX.reset();
+      
       p25RX.reset();
       nxdnRX.reset();
-      
+
       cwIdTX.reset();
       break;
     default:
@@ -786,20 +752,6 @@ void CSerialPort::process()
               sendNAK(err);
             }
           #endif
-            break;
-
-          case MMDVM_YSF_DATA:
-            if (m_ysfEnable) {
-              if (m_modemState == STATE_IDLE || m_modemState == STATE_YSF)
-                err = ysfTX.writeData(m_buffer + 3U, m_len - 3U);
-            }
-            if (err == 0U) {
-              if (m_modemState == STATE_IDLE)
-                setMode(STATE_YSF);
-            } else {
-              DEBUG2("Received invalid System Fusion data", err);
-              sendNAK(err);
-            }
             break;
 
           case MMDVM_P25_HDR:
@@ -1052,46 +1004,6 @@ void CSerialPort::writeDMRLost(bool slot)
   reply[0U] = MMDVM_FRAME_START;
   reply[1U] = 3U;
   reply[2U] = slot ? MMDVM_DMR_LOST2 : MMDVM_DMR_LOST1;
-
-  writeInt(1U, reply, 3);
-}
-
-void CSerialPort::writeYSFData(const uint8_t* data, uint8_t length)
-{
-  if (m_modemState != STATE_YSF && m_modemState != STATE_IDLE)
-    return;
-
-  if (!m_ysfEnable)
-    return;
-
-  uint8_t reply[130U];
-
-  reply[0U] = MMDVM_FRAME_START;
-  reply[1U] = 0U;
-  reply[2U] = MMDVM_YSF_DATA;
-
-  uint8_t count = 3U;
-  for (uint8_t i = 0U; i < length; i++, count++)
-    reply[count] = data[i];
-
-  reply[1U] = count;
-
-  writeInt(1U, reply, count);
-}
-
-void CSerialPort::writeYSFLost()
-{
-  if (m_modemState != STATE_YSF && m_modemState != STATE_IDLE)
-    return;
-
-  if (!m_ysfEnable)
-    return;
-
-  uint8_t reply[3U];
-
-  reply[0U] = MMDVM_FRAME_START;
-  reply[1U] = 3U;
-  reply[2U] = MMDVM_YSF_LOST;
 
   writeInt(1U, reply, 3);
 }

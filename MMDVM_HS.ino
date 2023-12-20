@@ -35,10 +35,8 @@ uint32_t m_modeTimerCnt;
 
 bool m_dstarEnable  = true;
 bool m_dmrEnable    = true;
-bool m_ysfEnable    = true;
 bool m_p25Enable    = true;
 bool m_nxdnEnable   = true;
-bool m_m17Enable    = true;
 bool m_pocsagEnable = true;
 
 bool m_duplex = false;
@@ -59,9 +57,6 @@ CDMRTX     dmrTX;
 
 CDMRDMORX  dmrDMORX;
 CDMRDMOTX  dmrDMOTX;
-
-CYSFRX     ysfRX;
-CYSFTX     ysfTX;
 
 CP25RX     p25RX;
 CP25TX     p25TX;

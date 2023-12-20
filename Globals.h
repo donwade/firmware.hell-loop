@@ -73,8 +73,8 @@ const uint8_t  MARK_NONE  = 0x00U;
 
 #include "DStarRX.h"
 #include "DStarTX.h"
-#include "YSFRX.h"
-#include "YSFTX.h"
+
+
 #include "P25RX.h"
 #include "P25TX.h"
 
@@ -102,10 +102,8 @@ extern uint32_t m_modeTimerCnt;
 
 extern bool m_dstarEnable;
 extern bool m_dmrEnable;
-extern bool m_ysfEnable;
 extern bool m_p25Enable;
 extern bool m_nxdnEnable;
-extern bool m_m17Enable;
 extern bool m_pocsagEnable;
 
 extern bool m_duplex;
@@ -130,8 +128,8 @@ extern CDMRTX dmrTX;
 extern CDMRDMORX dmrDMORX;
 extern CDMRDMOTX dmrDMOTX;
 
-extern CYSFRX ysfRX;
-extern CYSFTX ysfTX;
+
+
 
 extern CP25RX p25RX;
 extern CP25TX p25TX;
