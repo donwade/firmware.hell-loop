@@ -43,26 +43,26 @@ m_int2counter(0U)
 {
   Init();
 
-  CE_pin(HIGH);
-  LED_pin(HIGH);
-  PTT_pin(LOW);
-  DSTAR_pin(LOW);
-  DMR_pin(LOW);
-  YSF_pin(LOW);
-  P25_pin(LOW);
-  NXDN_pin(LOW);
-  M17_pin(LOW);
-  POCSAG_pin(LOW);
-  COS_pin(LOW);
-  DEB_pin(LOW);
+  RESET_ALL_MODEMS(HIGH);
+  LED_RED_service(HIGH);
+  LED_PTT_RED(LOW);
+  LED_DSTAR_GREEN(LOW);
+  LED_DMR_YELLOW(LOW);
+  LED_YSF_AMBER(LOW);
+  LED_P25_RED(LOW);
+  LED_NXDN_BLUE(LOW);
+  LED_M17_BLUE(LOW);
+  LED_POCSAG_BLUE(LOW);
+  LED_COS_YELW(LOW);
+  DEBUG_pin(LOW);
 
 #if !defined(BIDIR_DATA_PIN)
-  TXD_pin(LOW);
+  WRITE_MODEM_CLOCK1(LOW);
 #endif
 
-  SCLK_pin(LOW);
-  SDATA_pin(LOW);
-  SLE_pin(LOW);
+  SDIO_SET_CLOCKBIT(LOW);
+  SDIO_WRITE_DATABIT(LOW);
+  SDIO_LATCHCMD_U1(LOW);
 
   selfTest();
 
@@ -83,16 +83,16 @@ void CIO::selfTest()
       ledCount = 0U;
       ledValue = !ledValue;
 
-      LED_pin(!ledValue);
-      PTT_pin(ledValue);
-      DSTAR_pin(ledValue);
-      DMR_pin(ledValue);
-      YSF_pin(ledValue);
-      P25_pin(ledValue);
-      NXDN_pin(ledValue);
-      M17_pin(ledValue);
-      POCSAG_pin(ledValue);
-      COS_pin(ledValue);
+      LED_RED_service(!ledValue);
+      LED_PTT_RED(ledValue);
+      LED_DSTAR_GREEN(ledValue);
+      LED_DMR_YELLOW(ledValue);
+      LED_YSF_AMBER(ledValue);
+      LED_P25_RED(ledValue);
+      LED_NXDN_BLUE(ledValue);
+      LED_M17_BLUE(ledValue);
+      LED_POCSAG_BLUE(ledValue);
+      LED_COS_YELW(ledValue);
 
       blinks++;
 
@@ -122,33 +122,33 @@ void CIO::process()
     }
 
 #if defined(CONSTANT_SRV_LED)
-    LED_pin(HIGH);
+    LED_RED_service(HIGH);
 #elif defined(CONSTANT_SRV_LED_INVERTED)
-    LED_pin(LOW);
+    LED_RED_service(LOW);
 #elif defined(DISCREET_SRV_LED)
-    if (m_ledCount == 10000U) LED_pin(LOW);
+    if (m_ledCount == 10000U) LED_RED_service(LOW);
     if (m_ledCount >= 480000U) {
       m_ledCount = 0U;
-      LED_pin(HIGH);
+      LED_RED_service(HIGH);
     };
 #elif defined(DISCREET_SRV_LED_INVERTED)
-    if (m_ledCount == 10000U) LED_pin(HIGH);
+    if (m_ledCount == 10000U) LED_RED_service(HIGH);
     if (m_ledCount >= 480000U) {
       m_ledCount = 0U;
-      LED_pin(LOW);
+      LED_RED_service(LOW);
     };
 #else
     if (m_ledCount >= 24000U) {
       m_ledCount = 0U;
       m_ledValue = !m_ledValue;
-      LED_pin(m_ledValue);
+      LED_RED_service(m_ledValue);
     }
 #endif
   } else {
     if (m_ledCount >= 240000U) {
       m_ledCount = 0U;
       m_ledValue = !m_ledValue;
-      LED_pin(m_ledValue);
+      LED_RED_service(m_ledValue);
     }
     return;
   }
@@ -410,45 +410,45 @@ void CIO::setMode(MMDVM_STATE modemState)
 #if defined(USE_ALTERNATE_POCSAG_LEDS)
   if (modemState != STATE_POCSAG) {
 #endif
-    DSTAR_pin(modemState  == STATE_DSTAR);
-    DMR_pin(modemState    == STATE_DMR);
+    LED_DSTAR_GREEN(modemState  == STATE_DSTAR);
+    LED_DMR_YELLOW(modemState    == STATE_DMR);
 #if defined(USE_ALTERNATE_POCSAG_LEDS)
   }
 #endif
 #if defined(USE_ALTERNATE_NXDN_LEDS)
   if (modemState != STATE_NXDN) {
 #endif
-    YSF_pin(modemState    == STATE_YSF);
-    P25_pin(modemState    == STATE_P25);
+    LED_YSF_AMBER(modemState    == STATE_YSF);
+    LED_P25_RED(modemState    == STATE_P25);
 #if defined(USE_ALTERNATE_NXDN_LEDS)
   }
 #endif
 #if defined(USE_ALTERNATE_M17_LEDS)
   if (modemState != STATE_M17) {
 #endif
-    YSF_pin(modemState    == STATE_YSF);
-    P25_pin(modemState    == STATE_P25);
+    LED_YSF_AMBER(modemState    == STATE_YSF);
+    LED_P25_RED(modemState    == STATE_P25);
 #if defined(USE_ALTERNATE_M17_LEDS)
   }
 #endif
 #if defined(USE_ALTERNATE_NXDN_LEDS)
   if (modemState != STATE_YSF && modemState != STATE_P25) {
 #endif
-    NXDN_pin(modemState   == STATE_NXDN);
+    LED_NXDN_BLUE(modemState   == STATE_NXDN);
 #if defined(USE_ALTERNATE_NXDN_LEDS)
   }
 #endif
 #if defined(USE_ALTERNATE_POCSAG_LEDS)
   if (modemState != STATE_DSTAR && modemState != STATE_DMR) {
 #endif
-    POCSAG_pin(modemState == STATE_POCSAG);
+    LED_POCSAG_BLUE(modemState == STATE_POCSAG);
 #if defined(USE_ALTERNATE_POCSAG_LEDS)
   }
 #endif
 #if defined(USE_ALTERNATE_M17_LEDS)
   if (modemState != STATE_DSTAR && modemState != STATE_P25) {
 #endif
-    M17_pin(modemState   == STATE_M17);
+    LED_M17_BLUE(modemState   == STATE_M17);
 #if defined(USE_ALTERNATE_M17_LEDS)
   }
 #endif
@@ -458,7 +458,7 @@ void CIO::setDecode(bool dcd)
 {
   if (dcd != m_dcd) {
     m_scanPauseCnt = 1U;
-    COS_pin(dcd ? true : false);
+    LED_COS_YELW(dcd ? true : false);
   }
 
   m_dcd = dcd;

@@ -39,6 +39,12 @@
 #define UHF2_MAX  950000000
 
 // Banned amateur frequency ranges (satellite only, ISS, etc)
+#define BAN_OPPL  140990000
+#define BAN_OPPH  143000000
+
+#define BAN_OPSL  866000000
+#define BAN_OPSH  868000000
+
 #define BAN1_MIN  145800000
 #define BAN1_MAX  146000000
 #define BAN2_MIN  435000000
@@ -73,41 +79,41 @@ public:
 
   // Platform API
   void      Init(void);
-  void      SCLK_pin(bool on);
-  void      SDATA_pin(bool on);
-  bool      SREAD_pin(void);
-  void      SLE_pin(bool on);
+  void      SDIO_SET_CLOCKBIT(bool on);
+  void      SDIO_WRITE_DATABIT(bool on);
+  bool      SDIO_READ_DATABIT(void);
+  void      SDIO_LATCHCMD_U1(bool on);
 #if defined(DUPLEX)
-  void      SLE2_pin(bool on);
-  bool      RXD2_pin(void);
+  void      SDIO_LATCHCMD_U2(bool on);
+  bool      READ_MODEM_DATA2(void);
 #endif
-  void      CE_pin(bool on);
-  bool      RXD_pin(void);
-  bool      CLK_pin(void);
+  void      RESET_ALL_MODEMS(bool on);
+  bool      READ_MODEM_DATA1(void);
+  bool      READ_MODEM_CLOCK1(void);
 
 #if defined(BIDIR_DATA_PIN)
-  void      RXD_pin_write(bool on);
+  void      WRITE_MODEM_DATA1(bool on);
 #endif
 
-  void      TXD_pin(bool on);
-  void      PTT_pin(bool on);
-  void      LED_pin(bool on);
-  void      DEB_pin(bool on);
-  void      DSTAR_pin(bool on);
-  void      DMR_pin(bool on);
-  void      YSF_pin(bool on);
-  void      P25_pin(bool on);
-  void      NXDN_pin(bool on);
-  void      M17_pin(bool on);
-  void      POCSAG_pin(bool on);
-  void      COS_pin(bool on);
+  void      WRITE_MODEM_CLOCK1(bool on);
+  void      LED_PTT_RED(bool on);
+  void      LED_RED_service(bool on);
+  void      DEBUG_pin(bool on);
+  void      LED_DSTAR_GREEN(bool on);
+  void      LED_DMR_YELLOW(bool on);
+  void      LED_YSF_AMBER(bool on);
+  void      LED_P25_RED(bool on);
+  void      LED_NXDN_BLUE(bool on);
+  void      LED_M17_BLUE(bool on);
+  void      LED_POCSAG_BLUE(bool on);
+  void      LED_COS_YELW(bool on);
   void      interrupt(void);
 #if defined(DUPLEX)
   void      interrupt2(void);
 #endif
 
 #if defined(BIDIR_DATA_PIN)
-  void      Data_dir_out(bool dir);
+  void      SET_PP_OR_FLOAT_MODE(bool dir);
 #endif
 
   // IO API

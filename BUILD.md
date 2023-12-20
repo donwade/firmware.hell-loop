@@ -627,8 +627,8 @@ Status LEDs:
 
 Misc pins:
 
-    PIN_LED        PC13 (status led)
-    PIN_DEB        PB9 (debugging pin)
+    PIN_RED_SERVICE        PC13 (status led)
+    PIN_DEBUG_B9        PB9 (debugging pin)
 
 You could install a serie resistor (10 - 100 ohms) in each TxRxData and TxRxCLK lines, for reducing EMI.
 
@@ -666,8 +666,8 @@ Status LEDs:
 
 Misc pins:
 
-    PIN_LED       13
-    PIN_DEB       11
+    PIN_RED_SERVICE       13
+    PIN_DEBUG_B9       11
 
 You could install a serie resistor (10 - 100 ohms) in each TxRxData and TxRxCLK lines, for reducing EMI.
 
@@ -707,8 +707,8 @@ Status LEDs:
 
 Misc pins:
 
-    PIN_LED       13
-    PIN_DEB       23
+    PIN_RED_SERVICE       13
+    PIN_DEBUG_B9       23
 
 You could install a serie resistor (10 - 100 ohms) in each TxRxData and TxRxCLK lines, for reducing EMI.
 

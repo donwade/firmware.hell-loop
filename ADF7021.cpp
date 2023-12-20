@@ -56,25 +56,25 @@ static void Send_AD7021_control_shift()
 {
   for (int AD7021_counter = 31; AD7021_counter >= 0; AD7021_counter--) {
     if (bitRead(AD7021_control_word, AD7021_counter) == HIGH)
-      io.SDATA_pin(HIGH);
+      io.SDIO_WRITE_DATABIT(HIGH);
     else
-      io.SDATA_pin(LOW);
+      io.SDIO_WRITE_DATABIT(LOW);
 
     io.dlybit();
-    io.SCLK_pin(HIGH);
+    io.SDIO_SET_CLOCKBIT(HIGH);
     io.dlybit();
-    io.SCLK_pin(LOW);
+    io.SDIO_SET_CLOCKBIT(LOW);
   }
 
   // to keep SDATA signal at defined level when idle (not required)
-  io.SDATA_pin(LOW);
+  io.SDIO_WRITE_DATABIT(LOW);
 }
 
 static void Send_AD7021_control_slePulse()
 {
-  io.SLE_pin(HIGH);
+  io.SDIO_LATCHCMD_U1(HIGH);
   io.dlybit();
-  io.SLE_pin(LOW);
+  io.SDIO_LATCHCMD_U1(LOW);
 }
 
 void Send_AD7021_control(bool doSle)
@@ -88,9 +88,9 @@ void Send_AD7021_control(bool doSle)
 #if defined(DUPLEX)
 static  void Send_AD7021_control_sle2Pulse()
 {
-  io.SLE2_pin(HIGH);
+  io.SDIO_LATCHCMD_U2(HIGH);
   io.dlybit();
-  io.SLE2_pin(LOW);
+  io.SDIO_LATCHCMD_U2(LOW);
 }
 
 void Send_AD7021_control2(bool doSle)
@@ -115,48 +115,48 @@ uint16_t CIO::readRSSI()
   // Send control register
   for (int AD7021_counter = 8; AD7021_counter >= 0; AD7021_counter--) {
     if (bitRead(AD7021_RB, AD7021_counter) == HIGH)
-      SDATA_pin(HIGH);
+      SDIO_WRITE_DATABIT(HIGH);
     else
-      SDATA_pin(LOW);
+      SDIO_WRITE_DATABIT(LOW);
 
     dlybit();
-    SCLK_pin(HIGH);
+    SDIO_SET_CLOCKBIT(HIGH);
     dlybit();
-    SCLK_pin(LOW);
+    SDIO_SET_CLOCKBIT(LOW);
   }
 
-  SDATA_pin(LOW);
+  SDIO_WRITE_DATABIT(LOW);
 
 #if defined(DUPLEX)
   if (m_duplex || m_calState == STATE_RSSICAL)
-    SLE2_pin(HIGH);
+    SDIO_LATCHCMD_U2(HIGH);
   else
-    SLE_pin(HIGH);
+    SDIO_LATCHCMD_U1(HIGH);
 #else
-  SLE_pin(HIGH);
+  SDIO_LATCHCMD_U1(HIGH);
 #endif
 
   dlybit();
 
   // Read SREAD pin
   for (int AD7021_counter = 17; AD7021_counter >= 0; AD7021_counter--) {
-    SCLK_pin(HIGH);
+    SDIO_SET_CLOCKBIT(HIGH);
     dlybit();
 
     if ((AD7021_counter != 17) && (AD7021_counter != 0))
-      RB_word |= ((SREAD_pin() & 0x01) << (AD7021_counter - 1));
+      RB_word |= ((SDIO_READ_DATABIT() & 0x01) << (AD7021_counter - 1));
 
-    SCLK_pin(LOW);
+    SDIO_SET_CLOCKBIT(LOW);
     dlybit();
   }
 
 #if defined(DUPLEX)
   if (m_duplex || m_calState == STATE_RSSICAL)
-    SLE2_pin(LOW);
+    SDIO_LATCHCMD_U2(LOW);
   else
-    SLE_pin(LOW);
+    SDIO_LATCHCMD_U1(LOW);
 #else
-  SLE_pin(LOW);
+  SDIO_LATCHCMD_U1(LOW);
 #endif
 
   // Process RSSI code
@@ -219,9 +219,9 @@ void CIO::ifConf(MMDVM_STATE modemState, bool reset)
 
   // Toggle CE pin for ADF7021 reset
   if (reset) {
-    CE_pin(LOW);
+    RESET_ALL_MODEMS(LOW);
     delay_reset();
-    CE_pin(HIGH);
+    RESET_ALL_MODEMS(HIGH);
     delay_reset();
   }
 
@@ -596,7 +596,7 @@ void CIO::ifConf(MMDVM_STATE modemState, bool reset)
   Send_AD7021_control();
 
 #if defined(TEST_TX)
-  PTT_pin(HIGH);
+  LED_PTT_RED(HIGH);
   AD7021_control_word = ADF7021_TX_REG0;
   Send_AD7021_control();
   // TEST MODE (TX carrier only) (15)
@@ -842,7 +842,7 @@ void CIO::interrupt()
   if (!m_started)
     return;
 
-  uint8_t clk = CLK_pin();
+  uint8_t clk = READ_MODEM_CLOCK1();
 
   // this is to prevent activation by spurious interrupts
   // which seem to happen if you send out an control word
@@ -865,14 +865,14 @@ void CIO::interrupt()
 
 #if defined(BIDIR_DATA_PIN)
     if (bit)
-      RXD_pin_write(HIGH);
+      WRITE_MODEM_DATA1(HIGH);
     else
-      RXD_pin_write(LOW);
+      WRITE_MODEM_DATA1(LOW);
 #else
     if (bit)
-      TXD_pin(HIGH);
+      WRITE_MODEM_CLOCK1(HIGH);
     else
-      TXD_pin(LOW);
+      WRITE_MODEM_CLOCK1(LOW);
 #endif
 
     // wait a brief period before raising SLE
@@ -884,13 +884,13 @@ void CIO::interrupt()
 
       // SLE Pulse, should be moved out of here into class method
       // according to datasheet in 4FSK we have to deliver this before 1/4 tbit == 26uS
-      SLE_pin(HIGH);
+      SDIO_LATCHCMD_U1(HIGH);
       asm volatile("nop          \n\t"
                    "nop          \n\t"
                    "nop          \n\t"
                    );
-      SLE_pin(LOW);
-      SDATA_pin(LOW);
+      SDIO_LATCHCMD_U1(LOW);
+      SDIO_WRITE_DATABIT(LOW);
 
       // now do housekeeping
       totx_request = false;
@@ -901,7 +901,7 @@ void CIO::interrupt()
 
   // we sample the RX bit at rising TXD clock edge, so TXD must be 1 and we are not in tx mode
   if (!m_tx && clk == 1U && !m_duplex) {
-    if (RXD_pin())
+    if (READ_MODEM_DATA1())
       bit = 1U;
     else
       bit = 0U;
@@ -915,13 +915,13 @@ void CIO::interrupt()
       delay_us(26U);
 
       // SLE Pulse, should be moved out of here into class method
-      SLE_pin(HIGH);
+      SDIO_LATCHCMD_U1(HIGH);
       asm volatile("nop          \n\t"
                    "nop          \n\t"
                    "nop          \n\t"
                    );
-      SLE_pin(LOW);
-      SDATA_pin(LOW);
+      SDIO_LATCHCMD_U1(LOW);
+      SDIO_WRITE_DATABIT(LOW);
 
       // now do housekeeping
       m_tx = false;
@@ -948,7 +948,7 @@ void CIO::interrupt2()
   uint8_t bit = 0U;
 
   if (m_duplex) {
-    if (RXD2_pin())
+    if (READ_MODEM_DATA2())
       bit = 1U;
     else
       bit = 0U;
@@ -963,7 +963,7 @@ void CIO::interrupt2()
 void CIO::setTX()
 {
   // PTT pin on (doing it earlier helps to measure timing impact)
-  PTT_pin(HIGH);
+  LED_PTT_RED(HIGH);
 
   // Send register 0 for TX operation, but do not activate yet.
   // This is done in the interrupt at the correct time
@@ -971,17 +971,17 @@ void CIO::setTX()
   Send_AD7021_control(false);
 
 #if defined(BIDIR_DATA_PIN)
-  Data_dir_out(true);  // Data pin output mode
+  SET_PP_OR_FLOAT_MODE(true);  // Data pin output mode
 #endif
 
   totx_request = true;
-  while(CLK_pin());
+  while(READ_MODEM_CLOCK1());
 }
 
 void CIO::setRX(bool doSle)
 {
   // PTT pin off (doing it earlier helps to measure timing impact)
-  PTT_pin(LOW);
+  LED_PTT_RED(LOW);
 
   // Send register 0 for RX operation, but do not activate yet.
   // This is done in the interrupt at the correct time
@@ -989,7 +989,7 @@ void CIO::setRX(bool doSle)
   Send_AD7021_control(doSle);
 
 #if defined(BIDIR_DATA_PIN)
-  Data_dir_out(false);  // Data pin input mode
+  SET_PP_OR_FLOAT_MODE(false);  // Data pin input mode
 #endif
 
   if (!doSle) {

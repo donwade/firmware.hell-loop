@@ -32,30 +32,30 @@
 
 #if defined(PI_HAT_7021_REV_02)
 
-#define PIN_SCLK             GPIO_Pin_4
-#define PORT_SCLK            GPIOB
+#define PIN_SDIO_CLK             GPIO_Pin_4
+#define PORT_SDIO_CLK            GPIOB
 
-#define PIN_SREAD            GPIO_Pin_5
-#define PORT_SREAD           GPIOB
+#define PIN_SDIO_READFROM            GPIO_Pin_5
+#define PORT_SDIO_READ_FROM           GPIOB
 
-#define PIN_SDATA            GPIO_Pin_6
-#define PORT_SDATA           GPIOB
+#define PIN_SDIO_WRITETO            GPIO_Pin_6
+#define PORT_SDIO_WRITETO           GPIOB
 
-#define PIN_SLE              GPIO_Pin_7
-#define PORT_SLE             GPIOB
+#define PIN_SDIO_LATCH1              GPIO_Pin_7
+#define PORT_SDIO_LATCH1             GPIOB
 
 #define PIN_CE               GPIO_Pin_14
 #define PORT_CE              GPIOC
 
-#define PIN_RXD              GPIO_Pin_3
-#define PORT_RXD             GPIOB
+#define PIN_MODEM_DATA1              GPIO_Pin_3
+#define PORT_MODEM_DATA1             GPIOB
 
 // TXD used in SPI Data mode of ADF7021
 // TXD is TxRxCLK of ADF7021, standard TX/RX data interface
-#define PIN_TXD              GPIO_Pin_15
-#define PORT_TXD             GPIOA
-#define PIN_TXD_INT          GPIO_PinSource15
-#define PORT_TXD_INT         GPIO_PortSourceGPIOA
+#define PIN_MODEM_CLK1              GPIO_Pin_15
+#define PORT_MODEM_CLK1             GPIOA
+#define PIN_MODEM_INT1          GPIO_PinSource15
+#define PORT_MODEM_INT1         GPIO_PortSourceGPIOA
 
 // CLKOUT used in SPI Data mode of ADF7021
 #define PIN_CLKOUT           GPIO_Pin_14
@@ -63,62 +63,62 @@
 #define PIN_CLKOUT_INT       GPIO_PinSource14
 #define PORT_CLKOUT_INT      GPIO_PortSourceGPIOA
 
-#define PIN_LED              GPIO_Pin_13
-#define PORT_LED             GPIOC
+#define PIN_RED_SERVICE              GPIO_Pin_13
+#define PORT_RED_SERVICE             GPIOC
 
-#define PIN_DEB              GPIO_Pin_11
-#define PORT_DEB             GPIOA
+#define PIN_DEBUG_B9              GPIO_Pin_11
+#define PORT_DEBUG_B9             GPIOA
 
-#define PIN_DSTAR_LED        GPIO_Pin_14
-#define PORT_DSTAR_LED       GPIOB
+#define PIN_DSTAR_GREEN_LED        GPIO_Pin_14
+#define PORT_DSTAR_GREEN_LED       GPIOB
 
-#define PIN_DMR_LED          GPIO_Pin_15
-#define PORT_DMR_LED         GPIOB
+#define PIN_DMR_YLW_LED          GPIO_Pin_15
+#define PORT_DMR_YLW_LED         GPIOB
 
-#define PIN_YSF_LED          GPIO_Pin_13
-#define PORT_YSF_LED         GPIOA
+#define PIN_YSF_AMBR_LED          GPIO_Pin_13
+#define PORT_YSF_AMBR_LED         GPIOA
 
-#define PIN_P25_LED          GPIO_Pin_12
-#define PORT_P25_LED         GPIOA
+#define PIN_P25_RED_LED          GPIO_Pin_12
+#define PORT_P25_RED_LED         GPIOA
 
-#define PIN_NXDN_LED         GPIO_Pin_8
-#define PORT_NXDN_LED        GPIOA
+#define PIN_NXDN_BLUE_LED         GPIO_Pin_8
+#define PORT_NXDN_BLUE_LED        GPIOA
 
 // XXX  FIXME
-#define PIN_M17_LED          GPIO_Pin_8
-#define PORT_M17_LED         GPIOA
+#define PIN_M17_BLUE_LED          GPIO_Pin_8
+#define PORT_M17_BLUE_LED         GPIOA
 
-#define PIN_POCSAG_LED       GPIO_Pin_5
-#define PORT_POCSAG_LED      GPIOA
+#define PIN_POCSAG_BLUE_LED       GPIO_Pin_5
+#define PORT_POCSAG_BLUE_LED      GPIOA
 
-#define PIN_PTT_LED          GPIO_Pin_12
-#define PORT_PTT_LED         GPIOB
+#define PIN_PTT_RED_LED          GPIO_Pin_12
+#define PORT_PTT_RED_LED         GPIOB
 
-#define PIN_COS_LED          GPIO_Pin_13
-#define PORT_COS_LED         GPIOB
+#define PIN_COS_YELW_LED          GPIO_Pin_13
+#define PORT_COS_YELW_LED         GPIOB
 
 #elif defined(ZUMSPOT_ADF7021) || defined(SKYBRIDGE_HS) || defined(LONESTAR_USB)
 
-#define PIN_SCLK             GPIO_Pin_5
-#define PORT_SCLK            GPIOB
+#define PIN_SDIO_CLK             GPIO_Pin_5
+#define PORT_SDIO_CLK            GPIOB
 
-#define PIN_SREAD            GPIO_Pin_6
-#define PORT_SREAD           GPIOB
+#define PIN_SDIO_READFROM            GPIO_Pin_6
+#define PORT_SDIO_READ_FROM           GPIOB
 
-#define PIN_SDATA            GPIO_Pin_7
-#define PORT_SDATA           GPIOB
+#define PIN_SDIO_WRITETO            GPIO_Pin_7
+#define PORT_SDIO_WRITETO           GPIOB
 
-#define PIN_SLE              GPIO_Pin_8
-#define PORT_SLE             GPIOB
+#define PIN_SDIO_LATCH1              GPIO_Pin_8
+#define PORT_SDIO_LATCH1             GPIOB
 
-#define PIN_SLE2             GPIO_Pin_6
-#define PORT_SLE2            GPIOA
+#define PIN_SDIO_LATCH2             GPIO_Pin_6
+#define PORT_SDIO_LATCH2            GPIOA
 
 #define PIN_CE               GPIO_Pin_14
 #define PORT_CE              GPIOC
 
-#define PIN_RXD              GPIO_Pin_4
-#define PORT_RXD             GPIOB
+#define PIN_MODEM_DATA1              GPIO_Pin_4
+#define PORT_MODEM_DATA1             GPIOB
 
 #define PIN_SGL_DBL          GPIO_Pin_12
 #define PORT_SGL_DBL         GPIOA
@@ -131,20 +131,20 @@
 
 // TXD used in SPI Data mode of ADF7021
 // TXD is TxRxCLK of ADF7021, standard TX/RX data interface
-#define PIN_TXD              GPIO_Pin_3
-#define PORT_TXD             GPIOB
-#define PIN_TXD_INT          GPIO_PinSource3
-#define PORT_TXD_INT         GPIO_PortSourceGPIOB
+#define PIN_MODEM_CLK1              GPIO_Pin_3
+#define PORT_MODEM_CLK1             GPIOB
+#define PIN_MODEM_INT1          GPIO_PinSource3
+#define PORT_MODEM_INT1         GPIO_PortSourceGPIOB
 
 #if defined(DUPLEX)
-#define PIN_RXD2             GPIO_Pin_11
-#define PORT_RXD2            GPIOA
+#define PIN_MODEM_DATA2             GPIO_Pin_11
+#define PORT_MODEM_DATA2            GPIOA
 
 // TXD2 is TxRxCLK of the second ADF7021, standard TX/RX data interface
-#define PIN_TXD2             GPIO_Pin_8
-#define PORT_TXD2            GPIOA
-#define PIN_TXD2_INT         GPIO_PinSource8
-#define PORT_TXD2_INT        GPIO_PortSourceGPIOA
+#define PIN_MODEM_CLK2             GPIO_Pin_8
+#define PORT_MODEM_CLK2            GPIOA
+#define PIN_MODEM_INT2         GPIO_PinSource8
+#define PORT_MODEM_INT        GPIO_PortSourceGPIOA
 #endif
 
 // CLKOUT used in SPI Data mode of ADF7021
@@ -153,86 +153,86 @@
 #define PIN_CLKOUT_INT       GPIO_PinSource15
 #define PORT_CLKOUT_INT      GPIO_PortSourceGPIOA
 
-#define PIN_LED              GPIO_Pin_13
-#define PORT_LED             GPIOC
+#define PIN_RED_SERVICE              GPIO_Pin_13
+#define PORT_RED_SERVICE             GPIOC
 
-#define PIN_DEB              GPIO_Pin_9
-#define PORT_DEB             GPIOB
+#define PIN_DEBUG_B9              GPIO_Pin_9
+#define PORT_DEBUG_B9             GPIOB
 
-#define PIN_DSTAR_LED        GPIO_Pin_12
-#define PORT_DSTAR_LED       GPIOB
+#define PIN_DSTAR_GREEN_LED        GPIO_Pin_12
+#define PORT_DSTAR_GREEN_LED       GPIOB
 
-#define PIN_DMR_LED          GPIO_Pin_13
-#define PORT_DMR_LED         GPIOB
+#define PIN_DMR_YLW_LED          GPIO_Pin_13
+#define PORT_DMR_YLW_LED         GPIOB
 
-#define PIN_YSF_LED          GPIO_Pin_1
-#define PORT_YSF_LED         GPIOB
+#define PIN_YSF_AMBR_LED          GPIO_Pin_1
+#define PORT_YSF_AMBR_LED         GPIOB
 
-#define PIN_P25_LED          GPIO_Pin_0
-#define PORT_P25_LED         GPIOB
+#define PIN_P25_RED_LED          GPIO_Pin_0
+#define PORT_P25_RED_LED         GPIOB
 
 #if defined(STM32_USB_HOST)
-#define PIN_NXDN_LED         GPIO_Pin_1
+#define PIN_NXDN_BLUE_LED         GPIO_Pin_1
 #else
-#define PIN_NXDN_LED         GPIO_Pin_7
+#define PIN_NXDN_BLUE_LED         GPIO_Pin_7
 #endif
-#define PORT_NXDN_LED        GPIOA
+#define PORT_NXDN_BLUE_LED        GPIOA
 
 // XXX FIXME
 #if defined(STM32_USB_HOST)
-#define PIN_M17_LED          GPIO_Pin_1
+#define PIN_M17_BLUE_LED          GPIO_Pin_1
 #else
-#define PIN_M17_LED          GPIO_Pin_7
+#define PIN_M17_BLUE_LED          GPIO_Pin_7
 #endif
-#define PORT_M17_LED         GPIOA
+#define PORT_M17_BLUE_LED         GPIOA
 
-#define PIN_POCSAG_LED       GPIO_Pin_5
-#define PORT_POCSAG_LED      GPIOA
+#define PIN_POCSAG_BLUE_LED       GPIO_Pin_5
+#define PORT_POCSAG_BLUE_LED      GPIOA
 
-#define PIN_PTT_LED          GPIO_Pin_14
-#define PORT_PTT_LED         GPIOB
+#define PIN_PTT_RED_LED          GPIO_Pin_14
+#define PORT_PTT_RED_LED         GPIOB
 
-#define PIN_COS_LED          GPIO_Pin_15
-#define PORT_COS_LED         GPIOB
+#define PIN_COS_YELW_LED          GPIO_Pin_15
+#define PORT_COS_YELW_LED         GPIOB
 
 #elif defined(LIBRE_KIT_ADF7021) || defined(MMDVM_HS_HAT_REV12) || defined(MMDVM_HS_DUAL_HAT_REV10) || defined(NANO_HOTSPOT) || defined(NANO_DV_REV11) || defined(D2RG_MMDVM_HS)
 
-#define PIN_SCLK             GPIO_Pin_5
-#define PORT_SCLK            GPIOB
+#define PIN_SDIO_CLK             GPIO_Pin_5
+#define PORT_SDIO_CLK            GPIOB
 
-#define PIN_SREAD            GPIO_Pin_7
-#define PORT_SREAD           GPIOB
+#define PIN_SDIO_READFROM            GPIO_Pin_7
+#define PORT_SDIO_READ_FROM           GPIOB
 
-#define PIN_SDATA            GPIO_Pin_6
-#define PORT_SDATA           GPIOB
+#define PIN_SDIO_WRITETO            GPIO_Pin_6
+#define PORT_SDIO_WRITETO           GPIOB
 
-#define PIN_SLE              GPIO_Pin_8
-#define PORT_SLE             GPIOB
+#define PIN_SDIO_LATCH1              GPIO_Pin_8
+#define PORT_SDIO_LATCH1             GPIOB
 
-#define PIN_SLE2             GPIO_Pin_6
-#define PORT_SLE2            GPIOA
+#define PIN_SDIO_LATCH2             GPIO_Pin_6
+#define PORT_SDIO_LATCH2            GPIOA
 
 #define PIN_CE               GPIO_Pin_14
 #define PORT_CE              GPIOC
 
-#define PIN_RXD              GPIO_Pin_4
-#define PORT_RXD             GPIOB
+#define PIN_MODEM_DATA1              GPIO_Pin_4
+#define PORT_MODEM_DATA1             GPIOB
 
-#define PIN_RXD2             GPIO_Pin_4
-#define PORT_RXD2            GPIOA
+#define PIN_MODEM_DATA2             GPIO_Pin_4
+#define PORT_MODEM_DATA2            GPIOA
 
 // TXD used in SPI Data mode of ADF7021
 // TXD is TxRxCLK of ADF7021, standard TX/RX data interface
-#define PIN_TXD              GPIO_Pin_3
-#define PORT_TXD             GPIOB
-#define PIN_TXD_INT          GPIO_PinSource3
-#define PORT_TXD_INT         GPIO_PortSourceGPIOB
+#define PIN_MODEM_CLK1              GPIO_Pin_3
+#define PORT_MODEM_CLK1             GPIOB
+#define PIN_MODEM_INT1          GPIO_PinSource3
+#define PORT_MODEM_INT1         GPIO_PortSourceGPIOB
 
 // TXD2 is TxRxCLK of the second ADF7021, standard TX/RX data interface
-#define PIN_TXD2             GPIO_Pin_5
-#define PORT_TXD2            GPIOA
-#define PIN_TXD2_INT         GPIO_PinSource5
-#define PORT_TXD2_INT        GPIO_PortSourceGPIOA
+#define PIN_MODEM_CLK2             GPIO_Pin_5
+#define PORT_MODEM_CLK2            GPIOA
+#define PIN_MODEM_INT2         GPIO_PinSource5
+#define PORT_MODEM_INT        GPIO_PortSourceGPIOA
 
 // CLKOUT used in SPI Data mode of ADF7021
 #define PIN_CLKOUT           GPIO_Pin_15
@@ -240,39 +240,39 @@
 #define PIN_CLKOUT_INT       GPIO_PinSource15
 #define PORT_CLKOUT_INT      GPIO_PortSourceGPIOA
 
-#define PIN_LED              GPIO_Pin_13
-#define PORT_LED             GPIOC
+#define PIN_RED_SERVICE              GPIO_Pin_13
+#define PORT_RED_SERVICE             GPIOC
 
-#define PIN_DEB              GPIO_Pin_9
-#define PORT_DEB             GPIOB
+#define PIN_DEBUG_B9              GPIO_Pin_9
+#define PORT_DEBUG_B9             GPIOB
 
-#define PIN_DSTAR_LED        GPIO_Pin_12
-#define PORT_DSTAR_LED       GPIOB
+#define PIN_DSTAR_GREEN_LED        GPIO_Pin_12
+#define PORT_DSTAR_GREEN_LED       GPIOB
 
-#define PIN_DMR_LED          GPIO_Pin_13
-#define PORT_DMR_LED         GPIOB
+#define PIN_DMR_YLW_LED          GPIO_Pin_13
+#define PORT_DMR_YLW_LED         GPIOB
 
-#define PIN_YSF_LED          GPIO_Pin_1
-#define PORT_YSF_LED         GPIOB
+#define PIN_YSF_AMBR_LED          GPIO_Pin_1
+#define PORT_YSF_AMBR_LED         GPIOB
 
-#define PIN_P25_LED          GPIO_Pin_0
-#define PORT_P25_LED         GPIOB
+#define PIN_P25_RED_LED          GPIO_Pin_0
+#define PORT_P25_RED_LED         GPIOB
 
-#define PIN_NXDN_LED         GPIO_Pin_8
-#define PORT_NXDN_LED        GPIOA
+#define PIN_NXDN_BLUE_LED         GPIO_Pin_8
+#define PORT_NXDN_BLUE_LED        GPIOA
 
 // XXX FIXME
-#define PIN_M17_LED          GPIO_Pin_8
-#define PORT_M17_LED         GPIOA
+#define PIN_M17_BLUE_LED          GPIO_Pin_8
+#define PORT_M17_BLUE_LED         GPIOA
 
-#define PIN_POCSAG_LED       GPIO_Pin_7
-#define PORT_POCSAG_LED      GPIOA
+#define PIN_POCSAG_BLUE_LED       GPIO_Pin_7
+#define PORT_POCSAG_BLUE_LED      GPIOA
 
-#define PIN_PTT_LED          GPIO_Pin_14
-#define PORT_PTT_LED         GPIOB
+#define PIN_PTT_RED_LED          GPIO_Pin_14
+#define PORT_PTT_RED_LED         GPIOB
 
-#define PIN_COS_LED          GPIO_Pin_15
-#define PORT_COS_LED         GPIOB
+#define PIN_COS_YELW_LED          GPIO_Pin_15
+#define PORT_COS_YELW_LED         GPIOB
 
 #else
 #error "Either PI_HAT_7021_REV_02, ZUMSPOT_ADF7021, LONESTAR_USB, LIBRE_KIT_ADF7021, MMDVM_HS_HAT_REV12, MMDVM_HS_DUAL_HAT_REV10, NANO_HOTSPOT, NANO_DV_REV11, D2RG_MMDVM_HS or SKYBRIDGE_HS need to be defined"
@@ -404,40 +404,40 @@ void CIO::Init()
 
   // Pin SCLK
   GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
-  GPIO_InitStruct.GPIO_Pin   = PIN_SCLK;
+  GPIO_InitStruct.GPIO_Pin   = PIN_SDIO_CLK;
   GPIO_InitStruct.GPIO_Mode  = GPIO_Mode_Out_PP;
-  GPIO_Init(PORT_SCLK, &GPIO_InitStruct);
+  GPIO_Init(PORT_SDIO_CLK, &GPIO_InitStruct);
 
   // Pin SDATA
   GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
-  GPIO_InitStruct.GPIO_Pin   = PIN_SDATA;
+  GPIO_InitStruct.GPIO_Pin   = PIN_SDIO_WRITETO;
   GPIO_InitStruct.GPIO_Mode  = GPIO_Mode_Out_PP;
-  GPIO_Init(PORT_SDATA, &GPIO_InitStruct);
+  GPIO_Init(PORT_SDIO_WRITETO, &GPIO_InitStruct);
 
   // Pin SREAD
   GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
-  GPIO_InitStruct.GPIO_Pin   = PIN_SREAD;
+  GPIO_InitStruct.GPIO_Pin   = PIN_SDIO_READFROM;
   GPIO_InitStruct.GPIO_Mode  = GPIO_Mode_IN_FLOATING;
-  GPIO_Init(PORT_SREAD, &GPIO_InitStruct);
+  GPIO_Init(PORT_SDIO_READ_FROM, &GPIO_InitStruct);
 
   // Pin SLE
   GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
-  GPIO_InitStruct.GPIO_Pin   = PIN_SLE;
+  GPIO_InitStruct.GPIO_Pin   = PIN_SDIO_LATCH1;
   GPIO_InitStruct.GPIO_Mode  = GPIO_Mode_Out_PP;
-  GPIO_Init(PORT_SLE, &GPIO_InitStruct);
+  GPIO_Init(PORT_SDIO_LATCH1, &GPIO_InitStruct);
 
 #if defined(DUPLEX)
   // Pin SLE2
   GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
-  GPIO_InitStruct.GPIO_Pin   = PIN_SLE2;
+  GPIO_InitStruct.GPIO_Pin   = PIN_SDIO_LATCH2;
   GPIO_InitStruct.GPIO_Mode  = GPIO_Mode_Out_PP;
-  GPIO_Init(PORT_SLE2, &GPIO_InitStruct);
+  GPIO_Init(PORT_SDIO_LATCH2, &GPIO_InitStruct);
 
   // Pin RXD2
   GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
-  GPIO_InitStruct.GPIO_Pin   = PIN_RXD2;
+  GPIO_InitStruct.GPIO_Pin   = PIN_MODEM_DATA2;
   GPIO_InitStruct.GPIO_Mode  = GPIO_Mode_IN_FLOATING;
-  GPIO_Init(PORT_RXD2, &GPIO_InitStruct);
+  GPIO_Init(PORT_MODEM_DATA2, &GPIO_InitStruct);
 #endif
 
   // Pin CE
@@ -448,23 +448,23 @@ void CIO::Init()
 
   // Pin RXD
   GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
-  GPIO_InitStruct.GPIO_Pin   = PIN_RXD;
+  GPIO_InitStruct.GPIO_Pin   = PIN_MODEM_DATA1;
   GPIO_InitStruct.GPIO_Mode  = GPIO_Mode_IN_FLOATING;
-  GPIO_Init(PORT_RXD, &GPIO_InitStruct);
+  GPIO_Init(PORT_MODEM_DATA1, &GPIO_InitStruct);
 
   // Pin TXD
   // TXD is TxRxCLK of ADF7021, standard TX/RX data interface
   GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
-  GPIO_InitStruct.GPIO_Pin   = PIN_TXD;
+  GPIO_InitStruct.GPIO_Pin   = PIN_MODEM_CLK1;
 #if defined(BIDIR_DATA_PIN)
   GPIO_InitStruct.GPIO_Mode  = GPIO_Mode_IN_FLOATING;
 #else
   GPIO_InitStruct.GPIO_Mode  = GPIO_Mode_Out_PP;
 #endif
-  GPIO_Init(PORT_TXD, &GPIO_InitStruct);
+  GPIO_Init(PORT_MODEM_CLK1, &GPIO_InitStruct);
 #if defined(DUPLEX)
-  GPIO_InitStruct.GPIO_Pin   = PIN_TXD2;
-  GPIO_Init(PORT_TXD2, &GPIO_InitStruct);
+  GPIO_InitStruct.GPIO_Pin   = PIN_MODEM_CLK2;
+  GPIO_Init(PORT_MODEM_CLK2, &GPIO_InitStruct);
 #endif
 
   // Pin TXRX_CLK
@@ -477,69 +477,69 @@ void CIO::Init()
 
   // Pin LED
   GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
-  GPIO_InitStruct.GPIO_Pin   = PIN_LED;
+  GPIO_InitStruct.GPIO_Pin   = PIN_RED_SERVICE;
   GPIO_InitStruct.GPIO_Mode  = GPIO_Mode_Out_PP;
-  GPIO_Init(PORT_LED, &GPIO_InitStruct);
+  GPIO_Init(PORT_RED_SERVICE, &GPIO_InitStruct);
 
   // Pin Debug
   GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
-  GPIO_InitStruct.GPIO_Pin   = PIN_DEB;
+  GPIO_InitStruct.GPIO_Pin   = PIN_DEBUG_B9;
   GPIO_InitStruct.GPIO_Mode  = GPIO_Mode_Out_PP;
-  GPIO_Init(PORT_DEB, &GPIO_InitStruct);
+  GPIO_Init(PORT_DEBUG_B9, &GPIO_InitStruct);
 
   // D-Star LED
   GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
-  GPIO_InitStruct.GPIO_Pin   = PIN_DSTAR_LED;
+  GPIO_InitStruct.GPIO_Pin   = PIN_DSTAR_GREEN_LED;
   GPIO_InitStruct.GPIO_Mode  = GPIO_Mode_Out_PP;
-  GPIO_Init(PORT_DSTAR_LED, &GPIO_InitStruct);
+  GPIO_Init(PORT_DSTAR_GREEN_LED, &GPIO_InitStruct);
 
   // DMR LED
   GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
-  GPIO_InitStruct.GPIO_Pin   = PIN_DMR_LED;
+  GPIO_InitStruct.GPIO_Pin   = PIN_DMR_YLW_LED;
   GPIO_InitStruct.GPIO_Mode  = GPIO_Mode_Out_PP;
-  GPIO_Init(PORT_DMR_LED, &GPIO_InitStruct);
+  GPIO_Init(PORT_DMR_YLW_LED, &GPIO_InitStruct);
 
   // YSF LED
   GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
-  GPIO_InitStruct.GPIO_Pin   = PIN_YSF_LED;
+  GPIO_InitStruct.GPIO_Pin   = PIN_YSF_AMBR_LED;
   GPIO_InitStruct.GPIO_Mode  = GPIO_Mode_Out_PP;
-  GPIO_Init(PORT_YSF_LED, &GPIO_InitStruct);
+  GPIO_Init(PORT_YSF_AMBR_LED, &GPIO_InitStruct);
 
   // P25 LED
   GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
-  GPIO_InitStruct.GPIO_Pin   = PIN_P25_LED;
+  GPIO_InitStruct.GPIO_Pin   = PIN_P25_RED_LED;
   GPIO_InitStruct.GPIO_Mode  = GPIO_Mode_Out_PP;
-  GPIO_Init(PORT_P25_LED, &GPIO_InitStruct);
+  GPIO_Init(PORT_P25_RED_LED, &GPIO_InitStruct);
 
   // NXDN LED
   GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
-  GPIO_InitStruct.GPIO_Pin   = PIN_NXDN_LED;
+  GPIO_InitStruct.GPIO_Pin   = PIN_NXDN_BLUE_LED;
   GPIO_InitStruct.GPIO_Mode  = GPIO_Mode_Out_PP;
-  GPIO_Init(PORT_NXDN_LED, &GPIO_InitStruct);
+  GPIO_Init(PORT_NXDN_BLUE_LED, &GPIO_InitStruct);
 
   // POCSAG LED
   GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
-  GPIO_InitStruct.GPIO_Pin   = PIN_POCSAG_LED;
+  GPIO_InitStruct.GPIO_Pin   = PIN_POCSAG_BLUE_LED;
   GPIO_InitStruct.GPIO_Mode  = GPIO_Mode_Out_PP;
-  GPIO_Init(PORT_POCSAG_LED, &GPIO_InitStruct);
+  GPIO_Init(PORT_POCSAG_BLUE_LED, &GPIO_InitStruct);
 
   // PTT LED
   GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
-  GPIO_InitStruct.GPIO_Pin   = PIN_PTT_LED;
+  GPIO_InitStruct.GPIO_Pin   = PIN_PTT_RED_LED;
   GPIO_InitStruct.GPIO_Mode  = GPIO_Mode_Out_PP;
-  GPIO_Init(PORT_PTT_LED, &GPIO_InitStruct);
+  GPIO_Init(PORT_PTT_RED_LED, &GPIO_InitStruct);
 
   // COS LED
   GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
-  GPIO_InitStruct.GPIO_Pin   = PIN_COS_LED;
+  GPIO_InitStruct.GPIO_Pin   = PIN_COS_YELW_LED;
   GPIO_InitStruct.GPIO_Mode  = GPIO_Mode_Out_PP;
-  GPIO_Init(PORT_COS_LED, &GPIO_InitStruct);
+  GPIO_Init(PORT_COS_YELW_LED, &GPIO_InitStruct);
 
 #if defined(PI_HAT_7021_REV_02)
 
 #if defined(BIDIR_DATA_PIN)
   // Connect EXTI15 Line
-  GPIO_EXTILineConfig(PORT_TXD_INT, PIN_TXD_INT);
+  GPIO_EXTILineConfig(PORT_MODEM_INT1, PIN_MODEM_INT1);
   // Configure EXTI15 line
   EXTI_InitStructure.EXTI_Line = EXTI_Line15;
 #else
@@ -553,7 +553,7 @@ void CIO::Init()
 
 #if defined(BIDIR_DATA_PIN)
   // Connect EXTI3 Line
-  GPIO_EXTILineConfig(PORT_TXD_INT, PIN_TXD_INT);
+  GPIO_EXTILineConfig(PORT_MODEM_INT1, PIN_MODEM_INT1);
   // Configure EXTI3 line
   EXTI_InitStructure.EXTI_Line = EXTI_Line3;
 #else
@@ -565,7 +565,7 @@ void CIO::Init()
 
 #if defined(DUPLEX)
   // Connect EXTI5 Line
-  GPIO_EXTILineConfig(PORT_TXD2_INT, PIN_TXD2_INT);
+  GPIO_EXTILineConfig(PORT_MODEM_INT, PIN_MODEM_INT2);
   // Configure EXT5 line
   #if defined(ZUMSPOT_ADF7021) || defined(LONESTAR_USB) || defined(SKYBRIDGE_HS)
   EXTI_InitStructure2.EXTI_Line = EXTI_Line8;
@@ -632,153 +632,153 @@ void CIO::startInt()
 
 #if defined(BIDIR_DATA_PIN)
 // RXD pin is bidirectional in standard interfaces
-void CIO::Data_dir_out(bool dir)
+void CIO::SET_PP_OR_FLOAT_MODE(bool dir)
 {
   GPIO_InitTypeDef GPIO_InitStruct;
 
   GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
-  GPIO_InitStruct.GPIO_Pin   = PIN_RXD;
+  GPIO_InitStruct.GPIO_Pin   = PIN_MODEM_DATA1;
 
   if(dir)
     GPIO_InitStruct.GPIO_Mode  = GPIO_Mode_Out_PP;
   else
     GPIO_InitStruct.GPIO_Mode  = GPIO_Mode_IN_FLOATING;
 
-  GPIO_Init(PORT_RXD, &GPIO_InitStruct);
+  GPIO_Init(PORT_MODEM_DATA1, &GPIO_InitStruct);
 }
 #endif
 
-void CIO::SCLK_pin(bool on)
+void CIO::SDIO_SET_CLOCKBIT(bool on)
 {
-  GPIO_WriteBit(PORT_SCLK, PIN_SCLK, on ? Bit_SET : Bit_RESET);
+  GPIO_WriteBit(PORT_SDIO_CLK, PIN_SDIO_CLK, on ? Bit_SET : Bit_RESET);
 }
 
-void CIO::SDATA_pin(bool on)
+void CIO::SDIO_WRITE_DATABIT(bool on)
 {
-  GPIO_WriteBit(PORT_SDATA, PIN_SDATA, on ? Bit_SET : Bit_RESET);
+  GPIO_WriteBit(PORT_SDIO_WRITETO, PIN_SDIO_WRITETO, on ? Bit_SET : Bit_RESET);
 }
 
-bool CIO::SREAD_pin()
+bool CIO::SDIO_READ_DATABIT()
 {
-  return GPIO_ReadInputDataBit(PORT_SREAD, PIN_SREAD) == Bit_SET;
+  return GPIO_ReadInputDataBit(PORT_SDIO_READ_FROM, PIN_SDIO_READFROM) == Bit_SET;
 }
 
-void CIO::SLE_pin(bool on)
+void CIO::SDIO_LATCHCMD_U1(bool on)
 {
-  GPIO_WriteBit(PORT_SLE, PIN_SLE, on ? Bit_SET : Bit_RESET);
+  GPIO_WriteBit(PORT_SDIO_LATCH1, PIN_SDIO_LATCH1, on ? Bit_SET : Bit_RESET);
 }
 
 #if defined(DUPLEX)
-void CIO::SLE2_pin(bool on)
+void CIO::SDIO_LATCHCMD_U2(bool on)
 {
-  GPIO_WriteBit(PORT_SLE2, PIN_SLE2, on ? Bit_SET : Bit_RESET);
+  GPIO_WriteBit(PORT_SDIO_LATCH2, PIN_SDIO_LATCH2, on ? Bit_SET : Bit_RESET);
 }
 
-bool CIO::RXD2_pin()
+bool CIO::READ_MODEM_DATA2()
 {
-  return GPIO_ReadInputDataBit(PORT_RXD2, PIN_RXD2) == Bit_SET;
+  return GPIO_ReadInputDataBit(PORT_MODEM_DATA2, PIN_MODEM_DATA2) == Bit_SET;
 }
 #endif
 
-void CIO::CE_pin(bool on)
+void CIO::RESET_ALL_MODEMS(bool on)
 {
   GPIO_WriteBit(PORT_CE, PIN_CE, on ? Bit_SET : Bit_RESET);
 }
 
-bool CIO::RXD_pin()
+bool CIO::READ_MODEM_DATA1()
 {
-  return GPIO_ReadInputDataBit(PORT_RXD, PIN_RXD) == Bit_SET;
+  return GPIO_ReadInputDataBit(PORT_MODEM_DATA1, PIN_MODEM_DATA1) == Bit_SET;
 }
 
-bool CIO::CLK_pin()
+bool CIO::READ_MODEM_CLOCK1()
 {
 #if defined(BIDIR_DATA_PIN)
-  return GPIO_ReadInputDataBit(PORT_TXD, PIN_TXD) == Bit_SET;
+  return GPIO_ReadInputDataBit(PORT_MODEM_CLK1, PIN_MODEM_CLK1) == Bit_SET;
 #else
   return GPIO_ReadInputDataBit(PORT_CLKOUT, PIN_CLKOUT) == Bit_SET;
 #endif
 }
 
 #if defined(BIDIR_DATA_PIN)
-void CIO::RXD_pin_write(bool on)
+void CIO::WRITE_MODEM_DATA1(bool on)
 {
-  GPIO_WriteBit(PORT_RXD, PIN_RXD, on ? Bit_SET : Bit_RESET);
+  GPIO_WriteBit(PORT_MODEM_DATA1, PIN_MODEM_DATA1, on ? Bit_SET : Bit_RESET);
 }
 #endif
 
-void CIO::TXD_pin(bool on)
+void CIO::WRITE_MODEM_CLOCK1(bool on)
 {
-  GPIO_WriteBit(PORT_TXD, PIN_TXD, on ? Bit_SET : Bit_RESET);
+  GPIO_WriteBit(PORT_MODEM_CLK1, PIN_MODEM_CLK1, on ? Bit_SET : Bit_RESET);
 }
 
-void CIO::LED_pin(bool on)
+void CIO::LED_RED_service(bool on)
 {
-  GPIO_WriteBit(PORT_LED, PIN_LED, on ? Bit_SET : Bit_RESET);
+  GPIO_WriteBit(PORT_RED_SERVICE, PIN_RED_SERVICE, on ? Bit_SET : Bit_RESET);
 }
 
-void CIO::DEB_pin(bool on)
+void CIO::DEBUG_pin(bool on)
 {
-  GPIO_WriteBit(PORT_DEB, PIN_DEB, on ? Bit_SET : Bit_RESET);
+  GPIO_WriteBit(PORT_DEBUG_B9, PIN_DEBUG_B9, on ? Bit_SET : Bit_RESET);
 }
 
-void CIO::DSTAR_pin(bool on)
+void CIO::LED_DSTAR_GREEN(bool on)
 {
-  GPIO_WriteBit(PORT_DSTAR_LED, PIN_DSTAR_LED, on ? Bit_SET : Bit_RESET);
+  GPIO_WriteBit(PORT_DSTAR_GREEN_LED, PIN_DSTAR_GREEN_LED, on ? Bit_SET : Bit_RESET);
 }
 
-void CIO::DMR_pin(bool on)
+void CIO::LED_DMR_YELLOW(bool on)
 {
-  GPIO_WriteBit(PORT_DMR_LED, PIN_DMR_LED, on ? Bit_SET : Bit_RESET);
+  GPIO_WriteBit(PORT_DMR_YLW_LED, PIN_DMR_YLW_LED, on ? Bit_SET : Bit_RESET);
 }
 
-void CIO::YSF_pin(bool on)
+void CIO::LED_YSF_AMBER(bool on)
 {
-  GPIO_WriteBit(PORT_YSF_LED, PIN_YSF_LED, on ? Bit_SET : Bit_RESET);
+  GPIO_WriteBit(PORT_YSF_AMBR_LED, PIN_YSF_AMBR_LED, on ? Bit_SET : Bit_RESET);
 }
 
-void CIO::P25_pin(bool on)
+void CIO::LED_P25_RED(bool on)
 {
-  GPIO_WriteBit(PORT_P25_LED, PIN_P25_LED, on ? Bit_SET : Bit_RESET);
+  GPIO_WriteBit(PORT_P25_RED_LED, PIN_P25_RED_LED, on ? Bit_SET : Bit_RESET);
 }
 
-void CIO::NXDN_pin(bool on)
+void CIO::LED_NXDN_BLUE(bool on)
 {
 #if defined(USE_ALTERNATE_NXDN_LEDS)
-  GPIO_WriteBit(PORT_YSF_LED, PIN_YSF_LED, on ? Bit_SET : Bit_RESET);
-  GPIO_WriteBit(PORT_P25_LED, PIN_P25_LED, on ? Bit_SET : Bit_RESET);
+  GPIO_WriteBit(PORT_YSF_AMBR_LED, PIN_YSF_AMBR_LED, on ? Bit_SET : Bit_RESET);
+  GPIO_WriteBit(PORT_P25_RED_LED, PIN_P25_RED_LED, on ? Bit_SET : Bit_RESET);
 #else
-  GPIO_WriteBit(PORT_NXDN_LED, PIN_NXDN_LED, on ? Bit_SET : Bit_RESET);
+  GPIO_WriteBit(PORT_NXDN_BLUE_LED, PIN_NXDN_BLUE_LED, on ? Bit_SET : Bit_RESET);
 #endif
 }
 
-void CIO::M17_pin(bool on)
+void CIO::LED_M17_BLUE(bool on)
 {
 #if defined(USE_ALTERNATE_M17_LEDS)
-  GPIO_WriteBit(PORT_DSTAR_LED, PIN_DSTAR_LED, on ? Bit_SET : Bit_RESET);
-  GPIO_WriteBit(PORT_P25_LED, PIN_P25_LED, on ? Bit_SET : Bit_RESET);
+  GPIO_WriteBit(PORT_DSTAR_GREEN_LED, PIN_DSTAR_GREEN_LED, on ? Bit_SET : Bit_RESET);
+  GPIO_WriteBit(PORT_P25_RED_LED, PIN_P25_RED_LED, on ? Bit_SET : Bit_RESET);
 #else
-  GPIO_WriteBit(PORT_M17_LED, PIN_M17_LED, on ? Bit_SET : Bit_RESET);
+  GPIO_WriteBit(PORT_M17_BLUE_LED, PIN_M17_BLUE_LED, on ? Bit_SET : Bit_RESET);
 #endif
 }
 
-void CIO::POCSAG_pin(bool on)
+void CIO::LED_POCSAG_BLUE(bool on)
 {
 #if defined(USE_ALTERNATE_POCSAG_LEDS)
-  GPIO_WriteBit(PORT_DSTAR_LED, PIN_DSTAR_LED, on ? Bit_SET : Bit_RESET);
-  GPIO_WriteBit(PORT_DMR_LED, PIN_DMR_LED, on ? Bit_SET : Bit_RESET);
+  GPIO_WriteBit(PORT_DSTAR_GREEN_LED, PIN_DSTAR_GREEN_LED, on ? Bit_SET : Bit_RESET);
+  GPIO_WriteBit(PORT_DMR_YLW_LED, PIN_DMR_YLW_LED, on ? Bit_SET : Bit_RESET);
 #else
-  GPIO_WriteBit(PORT_POCSAG_LED, PIN_POCSAG_LED, on ? Bit_SET : Bit_RESET);
+  GPIO_WriteBit(PORT_POCSAG_BLUE_LED, PIN_POCSAG_BLUE_LED, on ? Bit_SET : Bit_RESET);
 #endif
 }
 
-void CIO::PTT_pin(bool on)
+void CIO::LED_PTT_RED(bool on)
 {
-  GPIO_WriteBit(PORT_PTT_LED, PIN_PTT_LED, on ? Bit_SET : Bit_RESET);
+  GPIO_WriteBit(PORT_PTT_RED_LED, PIN_PTT_RED_LED, on ? Bit_SET : Bit_RESET);
 }
 
-void CIO::COS_pin(bool on)
+void CIO::LED_COS_YELW(bool on)
 {
-  GPIO_WriteBit(PORT_COS_LED, PIN_COS_LED, on ? Bit_SET : Bit_RESET);
+  GPIO_WriteBit(PORT_COS_YELW_LED, PIN_COS_YELW_LED, on ? Bit_SET : Bit_RESET);
 }
 
 #if defined(ZUMSPOT_ADF7021) || defined(LONESTAR_USB) || defined(SKYBRIDGE_HS)
