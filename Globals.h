@@ -42,7 +42,6 @@ enum MMDVM_STATE {
   STATE_P25       = 4,
   STATE_NXDN      = 5,
   STATE_POCSAG    = 6,
-  STATE_M17       = 7,
 
   // Dummy states start at 90
   STATE_DMRDMO1K  = 92,

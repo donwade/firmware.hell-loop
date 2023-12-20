@@ -364,8 +364,6 @@ uint8_t CSerialPort::setConfig(const uint8_t* data, uint8_t length)
       io.ifConf(STATE_P25, true);
     else if(m_nxdnEnable)
       io.ifConf(STATE_NXDN, true);
-    else if(m_m17Enable)
-      io.ifConf(STATE_M17, true);
     else if(m_pocsagEnable)
       io.ifConf(STATE_POCSAG, true);
   }
