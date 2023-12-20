@@ -1,0 +1,70 @@
+#!/bin/bash
+reset
+set -x
+NAME=`uname -m`
+rm -rf bin/*
+rm -rf obj_f1/*
+
+if [ "$NAME" == "armv7l" ]; then
+export PATH=/home/dwade/.arduino15/packages/STMicroelectronics/tools/xpack-arm-none-eabi-gcc/10.3.1-2.3/bin:$PATH
+elif [ "$NAME" == "x86_64" ]; then
+    export PATH=/home/dwade/x-tools/arm-none-eabi/bin:$PATH
+    #
+    # ct-ng issue with newlib and linking stage
+    #
+    #https://gcc.gnu.org/onlinedocs/gcc/Environment-Variables.html
+    # The default value of GCC_EXEC_PREFIX is prefix/lib/gcc/ 
+    #  (where prefix is the prefix to the INSTALLATION)
+    #
+    # In many cases prefix above is the value of prefix when you ran the configure script.
+    # prefix in this case is the classical installation dir where things end up.
+    #
+    # However
+    #
+    # ct-ng does not use a configure script and the build directory is not the same location
+    # as the where the INSTALL directory will be :(
+    # this will break cross tools as the build directory is disposed of after building.
+    #
+    # the solution is to locate the directory <whatever>/lib/gcc is in your INSTALL directory
+    # and set GCC_EXEC_PREFIX to it.
+    #
+    #  ***** remember you are providing a path to a DIRECORY and must end with a /
+    #
+    # GCC_EXEC_PREFIX is used when the compiler wants to find the companion tools it needs
+    # to carry out linking operations.... this is as simple as setting "PATH"
+    #
+    export GCC_EXEC_PREFIX=/home/dwade/x-tools/arm-none-eabi/lib/gcc/
+
+    #legacy compiler (no clue where it came from)
+    #export PATH=/home/dwade/arm-gnu-toolchain-12.2/bin:$PATH
+fi
+
+make clean &>/dev/null
+
+make SHELL='/bin/bash -x' -j4  | tee make.log
+ret=${PIPESTATUS[0]}
+echo $ret
+sleep 1
+
+if [ $ret != 0 ]; then
+  RED "failed .... exit early"
+  exit
+else
+  GREEN "good build"
+fi
+
+if [ $ret == 0 ]; then
+   if [ "$NAME" == "armv7l" ]; then
+        ./program_it
+        xcp .
+        exit
+    else
+        xcp-whitebox .
+        rsh dwade@whitebox "echo $PISSWORD | sudo -S $PWD/program_it"
+   fi
+fi
+
+#find . -type f -name *.o -exec rm {} \;
+#make SHELL='/bin/bash -x' VERBOSE=1 $* 2>1 | tee log
+
+

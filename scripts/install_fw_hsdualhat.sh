@@ -15,29 +15,38 @@
 #   You should have received a copy of the GNU General Public License
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-
+set -x
 # Configure latest version
 FW_VERSION="v1.5.2"
 
 # Configure beta version
 FW_VERSION_BETA="v1.5.1b"
 
+if [ "`uname -m`" != "armv7l" ]; then
+    RED "flashing only allowed on pi\n"
+    exit
+fi
 # Firmware filename
 FW_FILENAME="mmdvm_hs_dual_hat_fw.bin"
 	
-# Download latest firmware
-if [ $1 = "beta" ]; then
-	echo "Downloading beta firmware..."
-	curl -OL https://github.com/juribeparada/MMDVM_HS/releases/download/$FW_VERSION_BETA/$FW_FILENAME
+if [[ "$1" == *"mmdvm_f1.bin"* ]]; then
+    FW_FILENAME=$1
+    if [ ! -f $FW_FILENAME ]; then
+        echo "file $FW_FILENAME does not exist.... try again"
+        exit 1
+    fi
+    echo
+    echo  "Programming using custom developer build %s (inside `uname -n`) $1" 
+    echo
 else
-	echo "Downloading latest firmware (stable)..."
-	curl -OL https://github.com/juribeparada/MMDVM_HS/releases/download/$FW_VERSION/$FW_FILENAME
+	BLINK_RED "FOAD"
+    exit
 fi
 
 # Download STM32F10X_Lib (only for binary tools)
-if [ ! -d "./STM32F10X_Lib/utils" ]; then
-  git clone https://github.com/juribeparada/STM32F10X_Lib
-fi
+#if [ ! -d "./STM32F10X_Lib/utils" ]; then
+#  git clone https://github.com/juribeparada/STM32F10X_Lib || true
+#fi
 
 # Configure vars depending on OS
 if [ $(uname -s) == "Linux" ]; then

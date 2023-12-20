@@ -1,0 +1,14 @@
+#!/bin/bash
+# when called for remote programming, absolute paths must be used
+
+set -x
+
+# must be absolute as may be called from an rsh and paths mess up
+DEST=/home/dwade/lucifer/firmware.hell-loop
+cd $DEST
+
+kill -9 `pidof MMDVMCal`
+
+$DEST/scripts/install_fw_hsdualhat.sh $DEST/bin/mmdvm_f1.bin
+ls -al bin
+

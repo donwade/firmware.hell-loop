@@ -22,11 +22,24 @@ FW_VERSION="v1.5.2"
 # Configure beta version
 FW_VERSION_BETA="v1.5.1b"
 
+if [ "`uname -m`" != "armv7l" ]; then
+    RED "flashing only allowed on pi\n"
+    exit
+fi
 # Firmware filename
 FW_FILENAME="mmdvm_hs_hat_fw.bin"
 	
+if [[ "$1" == *"mmdvm_f1.bin"* ]]; then
+    FW_FILENAME=$1
+    if [ ! -f $FW_FILENAME ]; then
+        echo "file $FW_FILENAME does not exist.... try again"
+        exit 1
+    fi
+    echo
+    echo  "Programming using custom developer build %s (inside `uname -n`) $1" 
+    echo
+elif [ $1 == "beta" ]; then
 # Download latest firmware
-if [ $1 = "beta" ]; then
 	echo "Downloading beta firmware..."
 	curl -OL https://github.com/juribeparada/MMDVM_HS/releases/download/$FW_VERSION_BETA/$FW_FILENAME
 else
