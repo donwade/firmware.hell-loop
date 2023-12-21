@@ -99,7 +99,6 @@ extern uint8_t m_cwIdTXLevel;
 
 extern uint32_t m_modeTimerCnt;
 
-extern bool m_dstarEnable;
 extern bool m_dmrEnable;
 extern bool m_p25Enable;
 extern bool m_pocsagEnable;

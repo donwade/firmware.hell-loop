@@ -136,8 +136,6 @@ void CSerialPort::getStatus()
   reply[2U]  = MMDVM_GET_STATUS;
 
   reply[3U]  = 0x00U;
-  if (m_dstarEnable)
-    reply[3U] |= 0x01U;
   if (m_dmrEnable)
     reply[3U] |= 0x02U;
   if (m_p25Enable)
@@ -232,7 +230,6 @@ uint8_t CSerialPort::setConfig(const uint8_t* data, uint8_t length)
 
   m_debug = (data[0U] & 0x10U) == 0x10U;
 
-  bool dstarEnable  = (data[1U] & 0x01U) == 0x01U;
   bool dmrEnable    = (data[1U] & 0x02U) == 0x02U;
   bool p25Enable    = (data[1U] & 0x08U) == 0x08U;
   bool pocsagEnable = (data[1U] & 0x20U) == 0x20U;
@@ -267,9 +264,8 @@ uint8_t CSerialPort::setConfig(const uint8_t* data, uint8_t length)
   uint8_t p25TXLevel    = data[12U];
   uint8_t pocsagTXLevel = data[17U];
 
-  io.setDeviations(dstarTXLevel, dmrTXLevel, p25TXLevel, pocsagTXLevel);
+  io.setDeviations(dmrTXLevel, p25TXLevel, pocsagTXLevel);
 
-  m_dstarEnable  = dstarEnable;
   m_dmrEnable    = dmrEnable;
   m_p25Enable    = p25Enable;
   m_pocsagEnable = pocsagEnable;

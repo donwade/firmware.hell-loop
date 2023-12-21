@@ -37,8 +37,6 @@ bool m_pocsag_state = false;
 uint8_t m_cwIdTXLevel = 30;
 
 uint32_t m_modeTimerCnt;
-
-bool m_dstarEnable  = true;
 bool m_dmrEnable    = true;
 bool m_p25Enable    = true;
 bool m_pocsagEnable = true;

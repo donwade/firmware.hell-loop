@@ -995,11 +995,9 @@ void CIO::setPower(uint8_t power)
   m_power = power >> 2;
 }
 
-void CIO::setDeviations(uint8_t dstarTXLevel, uint8_t dmrTXLevel, uint8_t p25TXLevel, uint8_t pocsagTXLevel)
+void CIO::setDeviations(uint8_t dmrTXLevel, uint8_t p25TXLevel, uint8_t pocsagTXLevel)
 {
-  m_dstarDev = uint16_t((ADF7021_DEV_DSTAR * uint16_t(dstarTXLevel)) / 128U);
   m_dmrDev = uint16_t((ADF7021_DEV_DMR * uint16_t(dmrTXLevel)) / 128U);
-
   m_p25Dev = uint16_t((ADF7021_DEV_P25 * uint16_t(p25TXLevel)) / 128U);
   m_pocsagDev = uint16_t((ADF7021_DEV_POCSAG * uint16_t(pocsagTXLevel)) / 128U);
 }
@@ -1089,11 +1087,6 @@ uint32_t CIO::RXfreq()
 uint32_t CIO::TXfreq()
 {
   return (uint32_t)((float)(ADF7021_PFD / f_div) * ((float)((32768 * m_TX_N_divider) + m_TX_F_divider) / 32768.0));
-}
-
-uint16_t CIO::devDSTAR()
-{
-  return (uint16_t)((ADF7021_PFD * m_dstarDev) / (f_div * 65536));
 }
 
 uint16_t CIO::devDMR()
