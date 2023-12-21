@@ -47,7 +47,6 @@ uint32_t           f_div;
 uint16_t           m_dstarDev;
 uint16_t           m_dmrDev;
 uint16_t           m_p25Dev;
-uint16_t           m_nxdnDev;
 uint16_t           m_m17Dev;
 uint16_t           m_pocsagDev;
 
@@ -259,9 +258,6 @@ void CIO::ifConf(MMDVM_STATE modemState, bool reset)
     case STATE_P25:
       AFC_OFFSET = AFC_OFFSET_P25;
       break;
-    case STATE_NXDN:
-      AFC_OFFSET = AFC_OFFSET_NXDN;
-      break;
     default:
       break;
   }
@@ -461,7 +457,7 @@ void CIO::ifConf(MMDVM_STATE modemState, bool reset)
       ADF7021_REG2 |= (uint32_t) 0b111                     << 4;   // modulation (RC 4FSK)
 #endif
       break;
-
+/*
     case STATE_NXDN:
       // Dev: +1 symb 350 Hz, symb rate = 2400
 
@@ -488,6 +484,7 @@ void CIO::ifConf(MMDVM_STATE modemState, bool reset)
       ADF7021_REG2 |= (uint32_t) 0b111                     << 4;   // modulation (RC 4FSK)
 #endif
       break;
+*/
 
 /*
     case STATE_M17:
@@ -716,7 +713,7 @@ void CIO::ifConf2(MMDVM_STATE modemState)
       ADF7021_REG2 |= (uint32_t) (m_p25Dev / div2)  << 19;  // deviation
       ADF7021_REG2 |= (uint32_t) 0b111                     << 4;   // modulation (RC 4FSK)
       break;
-
+/*
     case STATE_NXDN:
       // Dev: +1 symb 350 Hz, symb rate = 2400
 
@@ -739,6 +736,8 @@ void CIO::ifConf2(MMDVM_STATE modemState)
       ADF7021_REG2 |= (uint32_t) (m_nxdnDev / div2) << 19;  // deviation
       ADF7021_REG2 |= (uint32_t) 0b111                     << 4;   // modulation (RC 4FSK)
       break;
+*/
+
 /*
     case STATE_M17:
       // Dev: +1 symb 800 Hz, symb rate = 4800
@@ -999,13 +998,12 @@ void CIO::setPower(uint8_t power)
   m_power = power >> 2;
 }
 
-void CIO::setDeviations(uint8_t dstarTXLevel, uint8_t dmrTXLevel, uint8_t p25TXLevel, uint8_t nxdnTXLevel, uint8_t pocsagTXLevel)
+void CIO::setDeviations(uint8_t dstarTXLevel, uint8_t dmrTXLevel, uint8_t p25TXLevel, uint8_t pocsagTXLevel)
 {
   m_dstarDev = uint16_t((ADF7021_DEV_DSTAR * uint16_t(dstarTXLevel)) / 128U);
   m_dmrDev = uint16_t((ADF7021_DEV_DMR * uint16_t(dmrTXLevel)) / 128U);
 
   m_p25Dev = uint16_t((ADF7021_DEV_P25 * uint16_t(p25TXLevel)) / 128U);
-  m_nxdnDev = uint16_t((ADF7021_DEV_NXDN * uint16_t(nxdnTXLevel)) / 128U);
   m_pocsagDev = uint16_t((ADF7021_DEV_POCSAG * uint16_t(pocsagTXLevel)) / 128U);
 }
 
@@ -1109,11 +1107,6 @@ uint16_t CIO::devDMR()
 uint16_t CIO::devP25()
 {
   return (uint16_t)((ADF7021_PFD * m_p25Dev) / (f_div * 65536));
-}
-
-uint16_t CIO::devNXDN()
-{
-  return (uint16_t)((ADF7021_PFD * m_nxdnDev) / (f_div * 65536));
 }
 
 uint16_t CIO::devM17()
