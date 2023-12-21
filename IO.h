@@ -66,6 +66,135 @@
 #define CAL_DLY_LOOP 104600U
 #endif
 #endif
+//----------------------------------------
+typedef union {
+	struct {
+		uint32_t  ADDRESS: 4;
+		uint32_t  DEMODSCHEME : 3;
+		uint32_t  DOTCROSS : 1;
+		uint32_t  INVERTCTL : 2;
+		uint32_t  DISCRIM_BW : 10;
+		uint32_t  POST_DEMOD_BW :10;
+		uint32_t  XIF_BW :2;
+	};
+	uint32_t ALL_32;
+} REG4_DEMODULATOR_SETUP;
+
+typedef union {
+	struct {
+		uint32_t  ADDRESS: 4;
+        uint32_t  SET_ADC_MODE:2;
+        uint32_t  READBACK_MODE:2;
+        uint32_t  READBACK_ENABLED: 1;
+	};
+	uint32_t ALL_32;
+} REG7_READBACK_SETUP;
+
+
+typedef union {
+	struct {
+		uint32_t  ADDRESS : 4;
+		uint32_t  BBOS_CLK_REG : 2;
+		uint32_t  DEMOD_CLK_REG : 4;
+		uint32_t  CDR_CLK_REG : 8;
+		uint32_t  SEQUENCER_CLK_REG : 8;
+		uint32_t  AGC_CLK_REG : 6;
+	};
+	uint32_t ALL_32;
+} REG3_TX_RX_CONTROL;
+
+typedef union {
+	struct {
+		uint32_t  ADDRESS : 4;
+		uint32_t  SLICER_THRES_REG : 7;
+		uint32_t  VITERBI_ON_REG : 1;
+		uint32_t  PHASE_CRCTN_EN_REG : 1;
+		uint32_t  VITERBI_MEM_REG : 2;
+		uint32_t  FSK3_THRES_REG : 7;
+		uint32_t  FSK3_TIME_REG : 4;
+	};
+	uint32_t ALL_32;
+} REG13_FSK_CONTROL;
+
+typedef union {
+	struct {
+		uint32_t  ADDRESS : 4;
+		uint32_t  AFC_ENABLED_REG : 1;
+		uint32_t  AFC_SCALING_REG : 12;
+		uint32_t  AFC_KI_REG : 4;
+		uint32_t  AFC_KP_REG : 3;
+		uint32_t  AFC_MAX_RANGE_REG : 8;
+	};
+	uint32_t ALL_32;
+} REG10_AFC_CONTROL;
+
+typedef union {
+	struct {
+		uint32_t  ADDRESS : 4;
+		uint32_t  MOD_SCHEME_REG : 3;
+		uint32_t  PA_ENABLE_REG : 1;
+		uint32_t  PA_RAMP_REG : 3;
+		uint32_t  PA_BIAS : 2;
+		uint32_t  POWER_AMP_REG : 6;
+		uint32_t  TX_DEVIATON_REG : 9;
+		uint32_t  TX_INVERT_REG : 2;
+		uint32_t  TX_RCOSINE_REG : 1;
+	};
+	uint32_t ALL_32;
+} REG2_TX_CONTROL;
+
+typedef union {
+	struct {
+		uint32_t  ADDRESS : 4;
+		uint32_t  RF_R_DIVIDER : 3;
+		uint32_t  CLKOUT_DIV_REG : 4;
+		uint32_t  XTAL_DOUBLER : 1;
+		uint32_t  XTAL_OSC_EN : 1;
+		uint32_t  XTAL_BIAS : 2;
+		uint32_t  CP_CURRENT : 2;
+		uint32_t  VCO_EN : 1;
+		uint32_t  RF_DIV2_EN : 1;
+		uint32_t  VCO_BIAS : 4;
+		uint32_t  VCO_ADJ : 2;
+		uint32_t  VCO_EXTERN_EN : 1;
+	};
+	uint32_t ALL_32;
+} REG1_VCO_CONTROL;
+
+typedef union {
+	struct {
+		uint32_t  ADDRESS : 4;
+		uint32_t  FRACTIONAL_N : 15;
+		uint32_t  INTEGER_N : 8;
+		uint32_t  RECIEVE_ON : 1;
+		uint32_t  UART_MODE_ON : 1;
+		uint32_t  MUXOUT_SEL : 3;
+	};
+	uint32_t ALL_32;
+} REG0_N_REGISTER;
+
+typedef union {
+	struct {
+		uint32_t  ADDRESS : 4;
+		uint32_t  SYNC_LENGTH : 2;
+		uint32_t  TOLERANCE : 2;
+		uint32_t  SEQUENCE : 24;
+	};
+	uint32_t ALL_32;
+} REG11_SYNCWORD_REGISTER;
+
+typedef union {
+	struct {
+		uint32_t  ADDRESS : 4;
+		uint32_t  LOCK_MODE : 2;
+		uint32_t  SWD_MODE : 2;
+		uint32_t  PAYLOAD_LEN : 8;
+	};
+	uint32_t ALL_32;
+} REG12_SWD_REGISTER;
+
+
+typedef enum { down, stay, up } knob;
 
 extern uint32_t  m_frequency_rx;
 extern uint32_t  m_frequency_tx;
@@ -115,7 +244,8 @@ public:
 #if defined(BIDIR_DATA_PIN)
   void      SET_PP_OR_FLOAT_MODE(bool dir);
 #endif
-
+  void     monitorADF7021(uint8_t reg, uint32_t value);
+  void     summaryADF7021(void);
   // IO API
   void      write(uint8_t* data, uint16_t length, const uint8_t* control = NULL);
   uint16_t  getSpace(void) const;
@@ -190,6 +320,8 @@ private:
   volatile uint16_t  m_int1counter;
   volatile uint16_t  m_int2counter;
 
+  bool               m_bTransmitAllowed;
+  uint8_t   setFreqHw(uint32_t frequency_rx, uint32_t frequency_tx, uint8_t rf_power, uint32_t pocsag_freq_tx);
 };
 
 #endif

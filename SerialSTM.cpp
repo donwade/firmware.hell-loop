@@ -530,7 +530,7 @@ uint8_t CSerialPort::readInt(uint8_t n)
   }
 }
 
-void CSerialPort::writeInt(uint8_t n, const uint8_t* data, uint16_t length, bool flush)
+bool CSerialPort::writeInt(uint8_t n, const uint8_t* data, uint16_t length, bool flush)
 {
   switch (n) {
     case 1U:

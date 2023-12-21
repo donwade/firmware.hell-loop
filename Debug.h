@@ -24,6 +24,7 @@
 
 #if defined(ENABLE_DEBUG)
 
+#define  ALWAYS             serial.alwaysPrinted
 #define  DEBUG1(a)          serial.writeDebug((a))
 #define  DEBUG2(a,b)        serial.writeDebug((a),(b))
 #define  DEBUG2I(a,b)       serial.writeDebugI((a),(b))
@@ -33,10 +34,11 @@
 
 #else
 
+#define  DEBUG
 #define  DEBUG1(a)
 #define  DEBUG2(a,b)
 #define  DEBUG2I(a,b)
-#define  DEBUG3(a,b,c)      serial.writeDebug((a),(b),(c))
+#define  DEBUG3(a,b,c)      serial.alwaysPrint((a),(b),(c))
 #define  DEBUG4(a,b,c,d)
 #define  DEBUG5(a,b,c,d,e)
 

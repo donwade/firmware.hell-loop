@@ -57,13 +57,15 @@ public:
 #endif
 
 #if defined(ENABLE_DEBUG)
+  void alwaysPrinted(const char *, ...);
+  void writeDebugI(const char* text, int32_t n1);
+
   void writeDebug(const char* text);
   void writeDebug(const char* text, int16_t n1);
-  void writeDebugI(const char* text, int32_t n1);
+  void writeDebug(const char* text, int16_t n1, int16_t n2);
   void writeDebug(const char* text, int16_t n1, int16_t n2, int16_t n3);
   void writeDebug(const char* text, int16_t n1, int16_t n2, int16_t n3, int16_t n4);
 #endif
-  void writeDebug(const char* text, int16_t n1, int16_t n2);
 
 private:
   uint8_t m_buffer[256U];
@@ -76,19 +78,20 @@ private:
   bool    m_firstCal;
 
   void    sendACK();
-  void    sendNAK(uint8_t err);
+  void    sendACK(uint32_t info);
+  void    sendNAK(uint16_t err);
   void    getStatus();
   void    getVersion();
-  uint8_t setConfig(const uint8_t* data, uint8_t length);
-  uint8_t setMode(const uint8_t* data, uint8_t length);
-  void    setMode(MMDVM_STATE modemState);
-  uint8_t setFreq(const uint8_t* data, uint8_t length);
+  uint16_t setConfig(const uint8_t* data, uint8_t length);
+  uint16_t setMode(const uint8_t* data, uint8_t length);
+  uint16_t setMode(MMDVM_STATE modemState);
+  uint16_t setFreq(const uint8_t* data, uint8_t length);
 
   // Hardware versions
   void    beginInt(uint8_t n, int speed);
   int     availableInt(uint8_t n);
   uint8_t readInt(uint8_t n);
-  void    writeInt(uint8_t n, const uint8_t* data, uint16_t length, bool flush = false);
+  bool    writeInt(uint8_t n, const uint8_t* data, uint16_t length, bool flush = false);
 };
 
 #endif

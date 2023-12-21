@@ -27,6 +27,7 @@
 
 #include "Config.h"
 
+void diffDump_AD7021(void);
 #if defined(ENABLE_ADF7021)
 
 /*

@@ -327,32 +327,58 @@ uint8_t CIO::setFreq(uint32_t frequency_rx, uint32_t frequency_tx, uint8_t rf_po
   // Configure power level
   setPower(rf_power);
 
+  bool tx_enabled = true;
 #if !defined(DISABLE_FREQ_CHECK)
   // Check frequency ranges
-  if( !( ((frequency_rx >= VHF1_MIN)&&(frequency_rx < VHF1_MAX)) || ((frequency_tx >= VHF1_MIN)&&(frequency_tx < VHF1_MAX)) || \
-  ((frequency_rx >= UHF1_MIN)&&(frequency_rx < UHF1_MAX)) || ((frequency_tx >= UHF1_MIN)&&(frequency_tx < UHF1_MAX)) || \
-  ((frequency_rx >= VHF2_MIN)&&(frequency_rx < VHF2_MAX)) || ((frequency_tx >= VHF2_MIN)&&(frequency_tx < VHF2_MAX)) || \
-  ((frequency_rx >= UHF2_MIN)&&(frequency_rx < UHF2_MAX)) || ((frequency_tx >= UHF2_MIN)&&(frequency_tx < UHF2_MAX)) ) )
-    return 4U;
+  if( !(
+          ((frequency_tx >= VHF1_MIN)&&(frequency_tx < VHF1_MAX)) ||
+          ((frequency_tx >= UHF1_MIN)&&(frequency_tx < UHF1_MAX)) ||
+          ((frequency_tx >= VHF2_MIN)&&(frequency_tx < VHF2_MAX)) ||
+          ((frequency_tx >= UHF2_MIN)&&(frequency_tx < UHF2_MAX))
+        )
+    )
+    tx_enabled = false;
 
-  if( !( ((pocsag_freq_tx >= VHF1_MIN)&&(pocsag_freq_tx < VHF1_MAX)) || \
-  ((pocsag_freq_tx >= UHF1_MIN)&&(pocsag_freq_tx < UHF1_MAX)) || \
-  ((pocsag_freq_tx >= VHF2_MIN)&&(pocsag_freq_tx < VHF2_MAX)) || \
-  ((pocsag_freq_tx >= UHF2_MIN)&&(pocsag_freq_tx < UHF2_MAX)) ) )
-    return 4U;
+  if( !( ((pocsag_freq_tx >= VHF1_MIN)&&(pocsag_freq_tx < VHF1_MAX)) ||
+          ((pocsag_freq_tx >= UHF1_MIN)&&(pocsag_freq_tx < UHF1_MAX)) ||
+          ((pocsag_freq_tx >= VHF2_MIN)&&(pocsag_freq_tx < VHF2_MAX)) ||
+          ((pocsag_freq_tx >= UHF2_MIN)&&(pocsag_freq_tx < UHF2_MAX))
+        )
+    )
+     tx_enabled = false;
 #endif
 
-#if !defined(DISABLE_FREQ_BAN)
-  // Check banned frequency ranges
-  if( ((frequency_rx >= BAN1_MIN)&&(frequency_rx <= BAN1_MAX)) || ((frequency_tx >= BAN1_MIN)&&(frequency_tx <= BAN1_MAX)) || \
-  ((frequency_rx >= BAN2_MIN)&&(frequency_rx <= BAN2_MAX)) || ((frequency_tx >= BAN2_MIN)&&(frequency_tx <= BAN2_MAX)) )
-    return 4U;
+#if  1 // !defined(DISABLE_FREQ_BAN)
+  // Always Check banned frequency ranges
+  // receive on any frequency you wish.
+  // ((frequency_rx >= BAN2_MIN)&&(frequency_rx <= BAN2_MAX))
+  // ((frequency_rx >= BAN1_MIN)&&(frequency_rx <= BAN1_MAX))
 
-  if( ((pocsag_freq_tx >= BAN1_MIN)&&(pocsag_freq_tx <= BAN1_MAX)) || \
-  ((pocsag_freq_tx >= BAN2_MIN)&&(pocsag_freq_tx <= BAN2_MAX)) )
-    return 4U;
+  if(  ((frequency_tx >= BAN1_MIN)&&(frequency_tx <= BAN1_MAX)) ||
+ 	   ((frequency_tx >= BAN2_MIN)&&(frequency_tx <= BAN2_MAX)) ||
+       ((frequency_tx >= BAN_OPPL)&&(frequency_tx <= BAN_OPPH)) ||
+	   ((frequency_tx >= BAN_OPSL)&&(frequency_tx <= BAN_OPSH))
+    )
+	  tx_enabled = false;
+
+  if(   ((pocsag_freq_tx >= BAN1_MIN)&&(pocsag_freq_tx <= BAN1_MAX)) ||
+       ((pocsag_freq_tx >= BAN_OPPL)&&(pocsag_freq_tx <= BAN_OPPH)) ||
+       ((pocsag_freq_tx >= BAN_OPSL)&&(pocsag_freq_tx <= BAN_OPSH)) ||
+  	    ((pocsag_freq_tx >= BAN2_MIN)&&(pocsag_freq_tx <= BAN2_MAX))
+    )
+	  tx_enabled = false;
 #endif
 
+	m_bTransmitAllowed = tx_enabled;
+
+	ALWAYS("TX IS %s on freq %lu", m_bTransmitAllowed ? _BOLDRED "ALLOWED - DANGER" _RESET: _GREEN "INHIBITED - SAFE" _RESET, frequency_tx );
+
+	return setFreqHw( frequency_rx, frequency_tx, m_bTransmitAllowed ? rf_power : 0, pocsag_freq_tx);
+
+}
+
+uint8_t CIO::setFreqHw(uint32_t frequency_rx, uint32_t frequency_tx, uint8_t rf_power, uint32_t pocsag_freq_tx)
+{
 // Check if we have a single, dualband or duplex board
 #if defined(ZUMSPOT_ADF7021) || defined(LONESTAR_USB) || defined(SKYBRIDGE_HS)
   if (checkZUMspot(frequency_rx, frequency_tx) > 0) {

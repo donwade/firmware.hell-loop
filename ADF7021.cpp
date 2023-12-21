@@ -21,10 +21,10 @@
  *   along with this program; if not, write to the Free Software
  *   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
+#include <cassert>
 
 #include "Config.h"
-
-#if defined(ENABLE_ADF7021)
+#include "Debug.h"
 
 #include "Globals.h"
 #include "IO.h"
@@ -50,8 +50,28 @@ uint16_t           m_p25Dev;
 uint16_t           m_m17Dev;
 uint16_t           m_pocsagDev;
 
+uint32_t		   mirror[2][16] = {0};
+const REG4_DEMODULATOR_SETUP REG4_ALLONES = { .ALL_32 = 0xFFFFFFFF};
+const REG3_TX_RX_CONTROL REG3_ALLONES = { .ALL_32 = 0xFFFFFFFF };
+void diffDump_AD7021(void)
+{
+	int i;
+	ALWAYS(_GREEN "changes" _RESET);
+	for (i = 0; i < 16; i++)
+	{
+	  uint32_t delta = mirror[0][i] ^ mirror[1][i];
+	  if (delta)
+	  	ALWAYS(_YELLOW "!= ADF7021_REG%02d 0x%08X // 0x%08X" _RESET, i, mirror[0][i], delta);
+	  else
+	  	ALWAYS(_GREEN  "== ADF7021_REG%02d 0x%08X // 0x%08X" _RESET, i, mirror[0][i], delta);
+	}
+	memcpy(mirror[1], mirror[0], sizeof mirror[0]);
+	ALWAYS(" ");
+}
 static void Send_AD7021_control_shift()
 {
+  int index = AD7021_control_word & 0x0F;
+  mirror [0][index] = AD7021_control_word;
   for (int AD7021_counter = 31; AD7021_counter >= 0; AD7021_counter--) {
     if (bitRead(AD7021_control_word, AD7021_counter) == HIGH)
       io.SDIO_WRITE_DATABIT(HIGH);
@@ -98,7 +118,210 @@ void Send_AD7021_control2(bool doSle)
   if (doSle)
     Send_AD7021_control_sle2Pulse();
 }
+#if defined(ADF7021_14_7456)
+	#define XTAL  14745600
+#else
+	#define XTAL  12288000
+	#error ok really?
 #endif
+inline void CIO::monitorADF7021(uint8_t reg, uint32_t value)
+{
+	mirror[0][reg] = value;
+}
+
+void CIO::summaryADF7021(void)
+{
+    REG0_N_REGISTER 		REG0;
+	REG1_VCO_CONTROL 		REG1;
+    REG2_TX_CONTROL 		REG2;
+	REG3_TX_RX_CONTROL 		REG3;
+    REG4_DEMODULATOR_SETUP 	REG4;
+    REG7_READBACK_SETUP		REG7;
+    REG12_SWD_REGISTER		REG12;
+    REG13_FSK_CONTROL 		REG13;
+    REG10_AFC_CONTROL 		REG10;
+    REG11_SYNCWORD_REGISTER REG11;
+	readRSSI();  // testing reg 7
+	REG0.ALL_32 = mirror[0][0];
+	REG1.ALL_32 = mirror[0][1];
+	REG2.ALL_32 = mirror[0][2];
+	REG3.ALL_32 = mirror[0][3];
+	REG4.ALL_32 = mirror[0][4];
+	REG7.ALL_32 = mirror[0][7];
+	REG10.ALL_32 = mirror[0][10];
+	REG12.ALL_32 = mirror[0][10];
+	REG11.ALL_32 = mirror[0][11];
+	REG13.ALL_32 = mirror[0][13];
+	uint32_t PFD = XTAL /REG1.RF_R_DIVIDER; //used many places
+	if (REG1.XTAL_DOUBLER) PFD = 2 * PFD;
+	ALWAYS("note: PFD = %d Hz", PFD);
+    ALWAYS("-------------------");
+	ALWAYS("REG0.ALL = 0x%08X\n", REG0.ALL_32);
+	ALWAYS("FRACTIONAL_N =\t%d", REG0.FRACTIONAL_N);
+	ALWAYS("INTEGER_N =\t%d", REG0.INTEGER_N);
+	ALWAYS("RECIEVE ON=\t%d", REG0.RECIEVE_ON);
+	ALWAYS("UART_ENABLED=\t%d", REG0.UART_MODE_ON);
+	static const char *mux[8] = {"Ready", "cal-done", "lock-det", "rssi-rdy", "tx-rx", "ZERO", "FLOAT", "ONE" };
+	ALWAYS("MUXOUT_SEL=\t%s", mux[REG0.MUXOUT_SEL]);
+	uint32_t rfOut = PFD * (REG0.INTEGER_N + REG0.FRACTIONAL_N/(1<<15));
+	if (REG1.RF_R_DIVIDER) rfOut /= 2;
+	ALWAYS("*** rfout =\t\t%d Hz", rfOut);
+    ALWAYS("-------------------");
+
+    ALWAYS("REG1.ALL = 0x%08X\n", REG1.ALL_32);
+	ALWAYS("REG1.RF_R_DIVIDER =\t%d", REG1.RF_R_DIVIDER);
+	ALWAYS("REG1.CLKOUT_DIV_REG =\t%d", REG1.CLKOUT_DIV_REG);
+	ALWAYS("REG1.XTAL_DOUBLER =\t%d", REG1.XTAL_DOUBLER );
+	ALWAYS("REG1.XTAL_OSC_EN =\t%d", REG1.XTAL_OSC_EN);
+
+	ALWAYS("REG1.XTAL_BIAS =\t%d uA", REG1.XTAL_BIAS * 5 + 20);
+
+	static const char *current[4]={ ".3", ".9", "1.5", "2.1"};
+	ALWAYS("REG1.CP_CURRENT =\t%s mA", current[REG1.CP_CURRENT]);
+
+	ALWAYS("REG1.VCO_BIAS =\t%d uA", 250 * REG1.VCO_BIAS );
+
+
+	ALWAYS("REG1.VCO_ADJ =\t%d", REG1.VCO_ADJ);
+	ALWAYS("REG1.VCO_EXTERN_EN =\t%d", REG1.VCO_EXTERN_EN);
+
+
+    ALWAYS("-------------------");
+    ALWAYS("REG2.ALL = 0x%08X\n", REG2.ALL_32);
+
+    static const char *MOS[8] = {"2FSK", "G2FSK", "3FSK", "4FSK", "OS2FSK", "RS2FSK", "RC3FSK", "RC4FSK"};
+    ALWAYS("REG2.MOD_SCHEME =\t%s", MOS[REG2.MOD_SCHEME_REG]);
+    ALWAYS("REG2.PA_ENABLE =\t%d", REG2.PA_ENABLE_REG);
+	ALWAYS("REG2.PA_RAMP =\t%d c/bit", REG2.PA_RAMP_REG);
+
+	static const uint8_t bias[4] = { 5, 7, 9, 11};
+	ALWAYS("REG2.PA_BIAS =\t%d uA", bias[REG2.PA_BIAS]);
+
+	ALWAYS("REG2.POWER_AMP_REG =\t%d dBm", REG2.POWER_AMP_REG);
+
+	uint32_t txFdev = REG2.TX_DEVIATON_REG * PFD / (1 << 16);
+	if (REG1.RF_DIV2_EN) txFdev /=2;  //pg 49
+
+	ALWAYS("REG2.TX_DEVIATION =\t%d Hz", txFdev);
+
+	static const char *ivert[4] = { "norm", "i-clk", "i-data", "i-clkNdata"};
+	ALWAYS("REG2.TX_INVERT =\t%s", ivert[REG2.TX_INVERT_REG]);
+	static const char *rcosine[2] = { ".5", ".7" };
+	ALWAYS("REG2.TX_RCOSINE =\t%s uS",rcosine[REG2.TX_RCOSINE_REG]);
+
+    ALWAYS("-------------------");
+
+	char const *scheme[] = { "2FSK linear\0", "2FSK correl8r\0", "3FSK\0", "4FSK\0"};
+	char const *ifbw[]   = { "12.5", "18.75", "25.0", "ERROR" };
+    char const *invert[] = { "normal clk", "invert clk", "invert data", "invert clk/data" };
+	char const *dotcross[] = { "cross product", "dot product", "ERROR" };
+
+
+	// quickly recover demod clock from xtal and demod reg.
+    uint32_t demod_clk = XTAL / REG3.DEMOD_CLK_REG;
+    uint32_t cdr_clock = demod_clk / REG3.CDR_CLK_REG;
+    uint32_t baud = cdr_clock / 32;
+
+    ALWAYS("REG3.ALL = 0x%08X\n", REG3.ALL_32);
+    ALWAYS("DEMOD_CLK\t= %d Hz", demod_clk);
+    ALWAYS("CDR_CLK\t= %d Hz", cdr_clock);
+    ALWAYS("BAUD\t\t= %d bps", baud);
+
+	float K = (REG4.DISCRIM_BW * 400000.) / (float)demod_clk;
+
+	unsigned k_multiplier;  	// used for K value determination
+	float	 fCutoffHz;
+
+	switch (REG4.DEMODSCHEME)
+	{
+		case 0:  //2fsk linear
+		case 1:  //2fsk corel8d
+			k_multiplier = 1;
+			fCutoffHz = baud * .75;
+			break;
+
+		case 2:  //3fsk
+			k_multiplier = 2;
+			fCutoffHz = baud;
+	    	break;
+	    case 3:  //4fsk
+	    	k_multiplier = 4;
+			fCutoffHz = baud * 1.6;
+	    	break;
+	    default:
+	    	assert(0);
+	    	break;
+	}
+
+	float fDev;
+	fDev = 100000. / (K * k_multiplier);
+
+    float fDiscBandwidth;
+    fDiscBandwidth = (float)demod_clk * K / 400000.0;
+
+    ALWAYS("Symbol dev =\t%d hz(?)", (uint32_t)fDiscBandwidth);
+    ALWAYS("K = %d \tfDev = %d \tfCutoff = %d",(uint32_t) K,(uint32_t) fDev, (uint32_t)fCutoffHz);
+
+    ALWAYS("-------------------");
+	ALWAYS("REG4.ALL 0x%08X\n", REG4.ALL_32);
+    ALWAYS("REG4.X_IF_BW =\t0x%X\t%s khz", REG4.XIF_BW, ifbw[REG4.XIF_BW]);
+    ALWAYS("REG4.POST_DEMOD_BW =\t0x%X", REG4.POST_DEMOD_BW);
+    ALWAYS("REG4.DISCRIM_BW =\t0x%X", REG4.DISCRIM_BW);
+    ALWAYS("REG4.INVERTCTL =\t0x%X\t%s", REG4.INVERTCTL, invert[REG4.INVERTCTL]);
+    ALWAYS("REG4.DOTCROSS =\t0x%X\t%s", REG4.DOTCROSS, dotcross[REG4.DOTCROSS]);
+    ALWAYS("REG4.DEMODSCHEME =\t0x%X\t%s", REG4.DEMODSCHEME, scheme[REG4.DEMODSCHEME]);
+    ALWAYS("REG4.ADDRESS_REGISTER=\t0x%X", REG4.ADDRESS);
+    ALWAYS("-------------------");
+
+   	ALWAYS("REG7.ALL = 0x%08X\n", REG7.ALL_32);
+
+   	static const char *adcmd[4] = {"rssi", "voltage", "tempC", "extPin" };
+	ALWAYS("REG7.SET_ADC_MODE =\t%s", adcmd[REG7.SET_ADC_MODE]);
+
+	// select value 1 below to read adc value above
+	// see page 45 for sequence to read back the data.
+	// see uint16_t CIO::readRSSI() for how command is sent and data recvd
+
+	static const char *rdbck[4] = {"afc", "adc_out", "cal", "sil-rev" };
+	ALWAYS("REG7.READBACK_MODE =\t%s val", rdbck[REG7.READBACK_MODE]);
+	ALWAYS("REG7.READBACK_ENABLED =\t%d", REG7.READBACK_ENABLED);
+
+    ALWAYS("-------------------");
+	ALWAYS("REG11.ALL = 0x%08X\n", REG11.ALL_32);
+	ALWAYS("REG11.SYNC_LENGTH =\t%d bits", REG11.SYNC_LENGTH * 4 + 12);
+	ALWAYS("REG11.TOLERANCE =\t%d bit errors", REG11.TOLERANCE);
+	ALWAYS("REG11.SEQUENCE =\t0x%08X", REG11.SEQUENCE);
+    ALWAYS("-------------------");
+
+	// lock AFC and AGC thresholds when?
+    ALWAYS("REG12.ALL = 0x%08X\n", REG12.ALL_32);
+    ALWAYS("(AFC/AGG locks when ...");
+	static const char* lck[4] = { "neverlock", "lockafter-sync", "lockafter-payload", "lock-NOW"};
+	ALWAYS("REG12.LOCK_MODE =\t%s", lck[REG12.LOCK_MODE]);
+	static const char* lmode[4] = { "swd_LO", "swd=sync-det", "swd=payload-done", "swd-HI"};
+	ALWAYS("REG12.SWD_MODE (swd pin)=\t%s", lmode[REG12.SWD_MODE]);
+	ALWAYS("REG12.PAYLOAD_LENGTH =\t%d bytes", REG12.PAYLOAD_LEN);
+
+    ALWAYS("-------------------");
+    ALWAYS("REG13.ALL = 0x%08X\n", REG13.ALL_32);
+    ALWAYS("REG13.SLICER_THRHLD =\t%d", REG13.SLICER_THRES_REG);
+    ALWAYS("REG13.VITERBI EN\t= %d", REG13.VITERBI_ON_REG);
+    ALWAYS("REG13.PHASE_CORR_EN= %d", REG13.PHASE_CRCTN_EN_REG);
+    ALWAYS("REG13.PHASE_CORR_MEMSIZE= %d", REG13.VITERBI_MEM_REG);
+    ALWAYS("REG13.PHASE_FSK_THRSHLD= %d", REG13.FSK3_THRES_REG);
+    ALWAYS("REG13.PHASE_FSK_TIME= %d", REG13.FSK3_TIME_REG);
+
+    ALWAYS("-------------------");
+	ALWAYS("REG10.AFC_ENABLED =\t%d",REG10.AFC_ENABLED_REG);
+	ALWAYS("REG10.AFC_SCALING =\t%d", REG10.AFC_SCALING_REG);
+	ALWAYS("REG10.AFC_KI_REG =\t%d", REG10.AFC_KI_REG);
+	ALWAYS("REG10.AFC_KP_REG =\t%d", REG10.AFC_KP_REG);
+	ALWAYS("REG10.AFC_MAX_RNG =\t%d", REG10.AFC_MAX_RANGE_REG);
+
+    ALWAYS("\n-------------------");
+
+}
+//-------------------------------------------------------------
 
 #if defined(SEND_RSSI_DATA)
 uint16_t CIO::readRSSI()
@@ -543,7 +766,7 @@ void CIO::ifConf(MMDVM_STATE modemState, bool reset)
 
   // MODULATION (2)
   ADF7021_REG2 |= (uint32_t) 0b0010;               // register 2
-  ADF7021_REG2 |= (uint32_t) m_power       << 13;  // power level
+  ADF7021_REG2 |= m_bTransmitAllowed ? (uint32_t) m_power << 13 : 0;  // power level
   ADF7021_REG2 |= (uint32_t) 0b110001      << 7;   // PA
   AD7021_control_word = ADF7021_REG2;
   Send_AD7021_control();
@@ -792,7 +1015,7 @@ void CIO::ifConf2(MMDVM_STATE modemState)
 
   // MODULATION (2)
   ADF7021_REG2 |= (uint32_t) 0b0010;                  // register 2
-  ADF7021_REG2 |= (uint32_t) (m_power & 0x3F) << 13;  // power level
+  ADF7021_REG2 |= m_bTransmitAllowed ? (uint32_t) (m_power & 0x3F) << 13 : 0;  // power level
   ADF7021_REG2 |= (uint32_t) 0b110001         << 7;   // PA
   AD7021_control_word = ADF7021_REG2;
   Send_AD7021_control2();
@@ -1045,7 +1268,7 @@ void CIO::updateCal()
   }
 
   ADF7021_REG2 |= (uint32_t) 0b0010;                   // register 2
-  ADF7021_REG2 |= (uint32_t) m_power           << 13;  // power level
+  ADF7021_REG2 |= m_bTransmitAllowed ? (uint32_t) m_power << 13 : 0;  // power level
   ADF7021_REG2 |= (uint32_t) 0b110001          << 7;   // PA
 
   AD7021_control_word = ADF7021_REG2;
@@ -1107,9 +1330,12 @@ uint16_t CIO::devPOCSAG()
 void CIO::printConf()
 {
   DEBUG1("MMDVM_HS FW configuration:");
+  diffDump_AD7021();
+  summaryADF7021();
   DEBUG2I("TX freq (Hz):", TXfreq());
   DEBUG2I("RX freq (Hz):", RXfreq());
-  DEBUG2("Power set:", m_power);
+  DEBUG2("Power REQESTED:", m_power);
+  DEBUG2("TX ENABLED:", m_bTransmitAllowed);
   DEBUG2("DMR +1 sym dev (Hz):", devDMR());
   DEBUG2("P25 +1 sym dev (Hz):", devP25());
   DEBUG2("POCSAG dev (Hz):", devPOCSAG());
