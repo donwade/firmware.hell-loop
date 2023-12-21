@@ -247,7 +247,6 @@ void CIO::ifConf(MMDVM_STATE modemState, bool reset)
     f_div = 1U;
 
   switch (modemState) {
-    case STATE_DSTAR:
     case STATE_POCSAG:
       AFC_OFFSET = 0;
       break;
@@ -302,10 +301,6 @@ void CIO::ifConf(MMDVM_STATE modemState, bool reset)
   ADF7021_TX_REG0 |= (uint32_t) m_TX_N_divider << 19;   // frequency;
   ADF7021_TX_REG0 |= (uint32_t) m_TX_F_divider << 4;    // frequency;
 
-#if defined(TEST_TX)
-  modemState = STATE_DSTAR;
-#endif
-
   switch (modemState) {
     case STATE_CWID:
       // CW ID base configuration: DMR
@@ -352,7 +347,7 @@ void CIO::ifConf(MMDVM_STATE modemState, bool reset)
       ADF7021_REG2 |= (uint32_t) (m_pocsagDev / div2)       << 19;  // deviation
       ADF7021_REG2 |= (uint32_t) 0b000                      << 4;   // modulation (2FSK)
       break;
-
+/*
     case STATE_DSTAR:
       // Dev: 1200 Hz, symb rate = 4800
 
@@ -375,6 +370,7 @@ void CIO::ifConf(MMDVM_STATE modemState, bool reset)
       ADF7021_REG2 |= (uint32_t) (m_dstarDev / div2)       << 19;  // deviation
       ADF7021_REG2 |= (uint32_t) 0b001                     << 4;   // modulation (GMSK)
       break;
+*/
 
     case STATE_DMR:
       // Dev: +1 symb 648 Hz, symb rate = 4800
@@ -622,6 +618,7 @@ void CIO::ifConf2(MMDVM_STATE modemState)
   uint32_t ADF7021_REG13 = 0U;
 
   switch (modemState) {
+/*
     case STATE_DSTAR:
       // Dev: 1200 Hz, symb rate = 4800
 
@@ -644,7 +641,7 @@ void CIO::ifConf2(MMDVM_STATE modemState)
       ADF7021_REG2 |= (uint32_t) (m_dstarDev / div2)<< 19;  // deviation
       ADF7021_REG2 |= (uint32_t) 0b001                     << 4;   // modulation (GMSK)
       break;
-
+*/
     case STATE_DMR:
       // Dev: +1 symb 648 Hz, symb rate = 4800
 

@@ -155,10 +155,8 @@ void CSerialPort::getStatus()
   if (io.hasTXOverflow())
     reply[5U] |= 0x08U;
 
-  if (m_dstarEnable)
-    reply[6U] = dstarTX.getSpace();
-  else
-    reply[6U] = 0U;
+  //reply[6U] = dstarTX.getSpace();
+  reply[6U] = 0U;
 
   if (m_dmrEnable) {
 #if defined(DUPLEX)
@@ -245,9 +243,7 @@ uint8_t CSerialPort::setConfig(const uint8_t* data, uint8_t length)
 
   MMDVM_STATE modemState = MMDVM_STATE(data[3U]);
 
-  if (modemState != STATE_IDLE && modemState != STATE_DSTAR && modemState != STATE_DMR && modemState != STATE_P25 && modemState != STATE_POCSAG && modemState != STATE_DSTARCAL && modemState != STATE_DMRCAL && modemState != STATE_DMRDMO1K && modemState != STATE_INTCAL && modemState != STATE_RSSICAL && modemState != STATE_POCSAGCAL)
-    return 4U;
-  if (modemState == STATE_DSTAR && !dstarEnable)
+  if (modemState != STATE_IDLE && modemState != STATE_DMR && modemState != STATE_P25 && modemState != STATE_POCSAG && modemState != STATE_DSTARCAL && modemState != STATE_DMRCAL && modemState != STATE_DMRDMO1K && modemState != STATE_INTCAL && modemState != STATE_RSSICAL && modemState != STATE_POCSAGCAL)
     return 4U;
   if (modemState == STATE_DMR && !dmrEnable)
     return 4U;
@@ -312,7 +308,7 @@ uint8_t CSerialPort::setConfig(const uint8_t* data, uint8_t length)
   }
 #endif
 
-  dstarTX.setTXDelay(txDelay);
+
   p25TX.setTXDelay(txDelay);
 
   pocsagTX.setTXDelay(txDelay);
@@ -328,9 +324,7 @@ uint8_t CSerialPort::setConfig(const uint8_t* data, uint8_t length)
   dmrDMORX.setColorCode(colorCode);
 
   if (!m_firstCal || (modemState != STATE_DMRCAL && modemState != STATE_DMRDMO1K && modemState != STATE_RSSICAL && modemState != STATE_INTCAL && modemState != STATE_POCSAGCAL)) {
-    if(m_dstarEnable)
-      io.ifConf(STATE_DSTAR, true);
-    else if(m_dmrEnable)
+    if(m_dmrEnable)
       io.ifConf(STATE_DMR, true);
     else if(m_p25Enable)
       io.ifConf(STATE_P25, true);
@@ -360,9 +354,7 @@ uint8_t CSerialPort::setMode(const uint8_t* data, uint8_t length)
   if (modemState == m_modemState)
     return 0U;
 
-  if (modemState != STATE_IDLE && modemState != STATE_DSTAR && modemState != STATE_DMR && modemState != STATE_P25 && modemState != STATE_POCSAG && modemState != STATE_DSTARCAL && modemState != STATE_DMRCAL && modemState != STATE_DMRDMO1K && modemState != STATE_RSSICAL && modemState != STATE_INTCAL && modemState != STATE_POCSAGCAL)
-    return 4U;
-  if (modemState == STATE_DSTAR && !m_dstarEnable)
+  if (modemState != STATE_IDLE && modemState != STATE_DMR && modemState != STATE_P25 && modemState != STATE_POCSAG && modemState != STATE_DSTARCAL && modemState != STATE_DMRCAL && modemState != STATE_DMRDMO1K && modemState != STATE_RSSICAL && modemState != STATE_INTCAL && modemState != STATE_POCSAGCAL)
     return 4U;
   if (modemState == STATE_DMR && !m_dmrEnable)
     return 4U;
@@ -438,26 +430,14 @@ void CSerialPort::setMode(MMDVM_STATE modemState)
   switch (modemState) {
     case STATE_DMR:
       DEBUG1("Mode set to DMR");
-      dstarRX.reset();
+
 
       p25RX.reset();
 
 
       cwIdTX.reset();
       break;
-    case STATE_DSTAR:
-      DEBUG1("Mode set to D-Star");
-#if defined(DUPLEX)
-      dmrIdleRX.reset();
-      dmrRX.reset();
-#endif
-      dmrDMORX.reset();
 
-      p25RX.reset();
-
-
-      cwIdTX.reset();
-      break;
     case STATE_P25:
       DEBUG1("Mode set to P25");
 #if defined(DUPLEX)
@@ -465,7 +445,7 @@ void CSerialPort::setMode(MMDVM_STATE modemState)
       dmrRX.reset();
 #endif
       dmrDMORX.reset();
-      dstarRX.reset();
+
 
 
 
@@ -478,7 +458,7 @@ void CSerialPort::setMode(MMDVM_STATE modemState)
       dmrRX.reset();
 #endif
       dmrDMORX.reset();
-      dstarRX.reset();
+
 
       p25RX.reset();
 
@@ -597,48 +577,6 @@ void CSerialPort::process()
             }
             if (err != 0U) {
               DEBUG2("Invalid CW Id data", err);
-              sendNAK(err);
-            }
-            break;
-
-          case MMDVM_DSTAR_HEADER:
-            if (m_dstarEnable) {
-              if (m_modemState == STATE_IDLE || m_modemState == STATE_DSTAR)
-                err = dstarTX.writeHeader(m_buffer + 3U, m_len - 3U);
-            }
-            if (err == 0U) {
-              if (m_modemState == STATE_IDLE)
-                setMode(STATE_DSTAR);
-            } else {
-              DEBUG2("Received invalid D-Star header", err);
-              sendNAK(err);
-            }
-            break;
-
-          case MMDVM_DSTAR_DATA:
-            if (m_dstarEnable) {
-              if (m_modemState == STATE_IDLE || m_modemState == STATE_DSTAR)
-                err = dstarTX.writeData(m_buffer + 3U, m_len - 3U);
-            }
-            if (err == 0U) {
-              if (m_modemState == STATE_IDLE)
-                setMode(STATE_DSTAR);
-            } else {
-              DEBUG2("Received invalid D-Star data", err);
-              sendNAK(err);
-            }
-            break;
-
-          case MMDVM_DSTAR_EOT:
-            if (m_dstarEnable) {
-              if (m_modemState == STATE_IDLE || m_modemState == STATE_DSTAR)
-                err = dstarTX.writeEOT();
-            }
-            if (err == 0U) {
-              if (m_modemState == STATE_IDLE)
-                setMode(STATE_DSTAR);
-            } else {
-              DEBUG2("Received invalid D-Star EOT", err);
               sendNAK(err);
             }
             break;
@@ -847,86 +785,6 @@ void CSerialPort::writeSerialRpt(const uint8_t* data, uint8_t length)
   writeInt(1U, data, length, true);
 }
 #endif
-
-
-void CSerialPort::writeDStarHeader(const uint8_t* header, uint8_t length)
-{
-  if (m_modemState != STATE_DSTAR && m_modemState != STATE_IDLE)
-    return;
-
-  if (!m_dstarEnable)
-    return;
-
-  uint8_t reply[50U];
-  reply[0U] = MMDVM_FRAME_START;
-  reply[1U] = 0U;
-  reply[2U] = MMDVM_DSTAR_HEADER;
-
-  uint8_t count = 3U;
-  for (uint8_t i = 0U; i < length; i++, count++)
-    reply[count] = header[i];
-
-  reply[1U] = count;
-
-  writeInt(1U, reply, count);
-}
-
-void CSerialPort::writeDStarData(const uint8_t* data, uint8_t length)
-{
-  if (m_modemState != STATE_DSTAR && m_modemState != STATE_IDLE)
-    return;
-
-  if (!m_dstarEnable)
-    return;
-
-  uint8_t reply[20U];
-
-  reply[0U] = MMDVM_FRAME_START;
-  reply[1U] = 0U;
-  reply[2U] = MMDVM_DSTAR_DATA;
-
-  uint8_t count = 3U;
-  for (uint8_t i = 0U; i < length; i++, count++)
-    reply[count] = data[i];
-
-  reply[1U] = count;
-
-  writeInt(1U, reply, count);
-}
-
-void CSerialPort::writeDStarLost()
-{
-  if (m_modemState != STATE_DSTAR && m_modemState != STATE_IDLE)
-    return;
-
-  if (!m_dstarEnable)
-    return;
-
-  uint8_t reply[3U];
-
-  reply[0U] = MMDVM_FRAME_START;
-  reply[1U] = 3U;
-  reply[2U] = MMDVM_DSTAR_LOST;
-
-  writeInt(1U, reply, 3);
-}
-
-void CSerialPort::writeDStarEOT()
-{
-  if (m_modemState != STATE_DSTAR && m_modemState != STATE_IDLE)
-    return;
-
-  if (!m_dstarEnable)
-    return;
-
-  uint8_t reply[3U];
-
-  reply[0U] = MMDVM_FRAME_START;
-  reply[1U] = 3U;
-  reply[2U] = MMDVM_DSTAR_EOT;
-
-  writeInt(1U, reply, 3);
-}
 
 void CSerialPort::writeDMRData(bool slot, const uint8_t* data, uint8_t length)
 {

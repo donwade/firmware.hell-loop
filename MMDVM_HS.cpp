@@ -48,8 +48,8 @@ bool m_duplex = false;
 bool m_tx  = false;
 bool m_dcd = false;
 
-CDStarRX   dstarRX;
-CDStarTX   dstarTX;
+
+
 
 uint8_t    m_control;
 
@@ -101,10 +101,6 @@ void loop()
   io.process();
 
   serial.process();
-
-  // The following is for transmitting
-  if (m_dstarEnable && m_modemState == STATE_DSTAR)
-    dstarTX.process();
 
   if (m_dmrEnable && m_modemState == STATE_DMR && m_calState == STATE_IDLE) {
 #if defined(DUPLEX)

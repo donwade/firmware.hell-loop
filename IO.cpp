@@ -112,7 +112,7 @@ void CIO::process()
   if (m_started) {
     // Two seconds timeout
     if (m_watchdog >= 19200U) {
-      if (m_modemState == STATE_DSTAR || m_modemState == STATE_DMR || m_modemState == STATE_P25 ) {
+      if (m_modemState == STATE_DMR || m_modemState == STATE_P25 ) {
         m_modemState = STATE_IDLE;
         setMode(m_modemState);
       }
@@ -169,9 +169,7 @@ void CIO::process()
     setRX(false);
   }
 
-  if(m_modemState_prev == STATE_DSTAR)
-    scantime = SCAN_TIME;
-  else if(m_modemState_prev == STATE_DMR)
+  if(m_modemState_prev == STATE_DMR)
     scantime = SCAN_TIME * 2U;
   else if(m_modemState_prev == STATE_P25)
     scantime = SCAN_TIME;
@@ -193,9 +191,6 @@ void CIO::process()
     m_rxBuffer.get(bit, control);
 
     switch (m_modemState_prev) {
-      case STATE_DSTAR:
-        dstarRX.databit(bit);
-        break;
       case STATE_DMR:
 #if defined(DUPLEX)
         if (m_duplex) {
@@ -223,10 +218,6 @@ void CIO::start()
 {
   m_TotalModes = 0U;
 
-  if(m_dstarEnable) {
-    m_Modes[m_TotalModes] = STATE_DSTAR;
-    m_TotalModes++;
-  }
   if(m_dmrEnable) {
     m_Modes[m_TotalModes] = STATE_DMR;
     m_TotalModes++;
@@ -379,21 +370,9 @@ uint8_t CIO::setFreq(uint32_t frequency_rx, uint32_t frequency_tx, uint8_t rf_po
 
 void CIO::setMode(MMDVM_STATE modemState)
 {
-#if defined(USE_ALTERNATE_POCSAG_LEDS)
-  if (modemState != STATE_POCSAG) {
-#endif
-    LED_DSTAR_GREEN(modemState  == STATE_DSTAR);
-    LED_DMR_YELLOW(modemState    == STATE_DMR);
-#if defined(USE_ALTERNATE_POCSAG_LEDS)
-  }
-#endif
-#if defined(USE_ALTERNATE_POCSAG_LEDS)
-  if (modemState != STATE_DSTAR && modemState != STATE_DMR) {
-#endif
+    LED_P25_RED(modemState == STATE_P25);
+    LED_DMR_YELLOW(modemState  == STATE_DMR);
     LED_POCSAG_BLUE(modemState == STATE_POCSAG);
-#if defined(USE_ALTERNATE_POCSAG_LEDS)
-  }
-#endif
 }
 
 void CIO::setDecode(bool dcd)

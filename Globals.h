@@ -70,8 +70,8 @@ const uint8_t  MARK_NONE  = 0x00U;
 #include "DMRTX.h"
 #endif
 
-#include "DStarRX.h"
-#include "DStarTX.h"
+
+
 
 
 #include "P25RX.h"
@@ -112,8 +112,8 @@ extern bool m_dcd;
 extern CIO io;
 extern CSerialPort serial;
 
-extern CDStarRX dstarRX;
-extern CDStarTX dstarTX;
+
+
 
 extern uint8_t m_control;
 
