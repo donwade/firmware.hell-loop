@@ -21,6 +21,7 @@
  */
 
 #include "Config.h"
+#include "Watchdog.h"
 
 #if defined(STM32F10X_MD) || defined(STM32F4XX) || defined(STM32F7XX)
 
@@ -92,10 +93,12 @@ CI2CHost i2c;
 void setup()
 {
   serial.start();
+  SetupWatchdog();  // you have 3 seconds to kick the dog
 }
 
 void loop()
 {
+  KickWatchdog();  // 3 second dog
   io.process();
 
   serial.process();

@@ -1099,11 +1099,6 @@ uint16_t CIO::devP25()
   return (uint16_t)((ADF7021_PFD * m_p25Dev) / (f_div * 65536));
 }
 
-uint16_t CIO::devM17()
-{
-  return (uint16_t)((ADF7021_PFD * m_m17Dev) / (f_div * 65536));
-}
-
 uint16_t CIO::devPOCSAG()
 {
   return (uint16_t)((ADF7021_PFD * m_pocsagDev) / (f_div * 65536));
@@ -1115,10 +1110,8 @@ void CIO::printConf()
   DEBUG2I("TX freq (Hz):", TXfreq());
   DEBUG2I("RX freq (Hz):", RXfreq());
   DEBUG2("Power set:", m_power);
-  DEBUG2("D-Star dev (Hz):", devDSTAR());
   DEBUG2("DMR +1 sym dev (Hz):", devDMR());
   DEBUG2("P25 +1 sym dev (Hz):", devP25());
-  DEBUG2("NXDN +1 sym dev (Hz):", devNXDN());
   DEBUG2("POCSAG dev (Hz):", devPOCSAG());
 }
 

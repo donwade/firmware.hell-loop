@@ -479,7 +479,7 @@ void CSerialPort::setMode(MMDVM_STATE modemState)
 
 void CSerialPort::start()
 {
-  beginInt(1U, 115200);
+  beginInt(1U,460800);
 
 #if defined(SERIAL_REPEATER) || defined(SERIAL_REPEATER_USART1)
   beginInt(3U, SERIAL_REPEATER_BAUD);

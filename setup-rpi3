@@ -1,0 +1,39 @@
+#!/bin/bash
+
+echo "see BUILD.md for additional configs"
+
+ID=`id -u`
+if [ $ID != 0 ]; then
+	echo "run as sudo su"
+	exit
+fi
+reset
+
+#sudo nano /boot/cmdline.txt
+#(remove the text: console=serial0,115200)
+sed -i.bak "s/console=serial0,115200//" /boot/cmdline.txt
+echo "------------ /boot/cmdline.txt---------"
+cat /boot/cmdline.txt
+echo; echo
+
+set -x
+systemctl disable serial-getty@ttyAMA0.service
+systemctl disable bluetooth.service
+
+echo; echo
+
+#Edit /boot/config.txt
+#    sudo nano /boot/config.txt
+#and add the following lines at the end of /boot/config.txt:
+#    enable_uart=1
+#    dtoverlay=pi3-disable-bt
+
+echo "enable_uart=1" >> /boot/config.txt
+echo "dtoverlay=pi3-disable-bt" >> /boot/config.txt
+set +x
+
+echo "----- /boot/config.txt"
+cat /boot/config.txt
+
+
+

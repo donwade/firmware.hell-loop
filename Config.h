@@ -68,14 +68,14 @@
 #define I2C_ADDR 0x22
 
 // Enable mode detection:
-#define ENABLE_SCAN_MODE
+//#define ENABLE_SCAN_MODE
 
 // Send RSSI value:
 #define SEND_RSSI_DATA
 
 // Enable Nextion LCD serial port repeater on USART2 (ZUMspot Libre Kit and ZUMspot RPi):
-#define SERIAL_REPEATER
-#define SERIAL_REPEATER_BAUD 9600
+//#define SERIAL_REPEATER
+//#define SERIAL_REPEATER_BAUD 9600
 
 // Enable Nextion LCD serial port repeater on USART1 (Do not use with STM32_USART1_HOST enabled):
 // #define SERIAL_REPEATER_USART1
@@ -99,13 +99,13 @@
 // #define USE_ALTERNATE_M17_LEDS
 
 // Use the D-Star and DMR LEDs for POCSAG
-#define USE_ALTERNATE_POCSAG_LEDS
+//#define USE_ALTERNATE_POCSAG_LEDS
 
 // Enable for RPi 3B+, USB mode
 // #define LONG_USB_RESET
 
 // Enable modem debug messages
-// #define ENABLE_DEBUG
+#define ENABLE_DEBUG
 
 // Disable frequency bands check
 // #define DISABLE_FREQ_CHECK

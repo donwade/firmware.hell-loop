@@ -166,7 +166,6 @@ public:
   uint16_t  devDSTAR(void);
   uint16_t  devDMR(void);
   uint16_t  devP25(void);
-  uint16_t  devNXDN(void);
   uint16_t  devPOCSAG(void);
   void      printConf();
 #endif
