@@ -22,6 +22,7 @@
 #if defined(STM32F10X_MD)
 
 #include "Globals.h"
+#include "IO.h"
 #include "SerialPort.h"
 #include "I2CHost.h"
 
@@ -57,10 +58,11 @@ extern "C" {
 
 /* ************* USART1 ***************** */
 
-volatile uint8_t  TXSerialfifo1[TX_SERIAL_FIFO_SIZE];
-volatile uint8_t  RXSerialfifo1[RX_SERIAL_FIFO_SIZE];
+volatile uint8_t  TXSerialfifo1[TX_SERIAL_FIFO_SIZE+1];
+volatile uint8_t  RXSerialfifo1[RX_SERIAL_FIFO_SIZE+1];
 volatile uint16_t TXSerialfifohead1, TXSerialfifotail1;
 volatile uint16_t RXSerialfifohead1, RXSerialfifotail1;
+volatile int16_t  RXSerialItemCtr1;  // allow negative, trying to find a bug
 
 // Init queues
 void TXSerialfifoinit1()
@@ -73,30 +75,85 @@ void RXSerialfifoinit1()
 {
   RXSerialfifohead1 = 0U;
   RXSerialfifotail1 = 0U;
+  RXSerialItemCtr1 = 0;
 }
+
+//----------------------------------------------
+static __inline__ uint32_t __get_PRIMASK2(void) \
+{ 							\
+	uint32_t primask = 0; 	\
+  __asm__ volatile ("MRS %[result], PRIMASK\n\t":[result]"=r"(primask)::); \
+  return primask; } // returns 0 if interrupts enabled, 1 if disabled
+//----------------------------------------------
+
+
 
 // How full is queue
 // TODO decide if how full or how empty is preferred info to return
 uint16_t TXSerialfifolevel1()
 {
+  uint32_t prim;
+  uint32_t ret;
+
+  /* Do some stuff here which can be interrupted */
+
+  /* Read PRIMASK register, check interrupt status before you disable them */
+  /* Returns 0 if they are enabled, or non-zero if disabled */
+  prim = __get_PRIMASK2();
+
+  /* Disable interrupts */
+  __disable_irq();
+
   uint32_t tail = TXSerialfifotail1;
   uint32_t head = TXSerialfifohead1;
 
   if (tail > head)
-    return TX_SERIAL_FIFO_SIZE + head - tail;
+    ret =  TX_SERIAL_FIFO_SIZE + head - tail;
   else
-    return head - tail;
+    ret =  head - tail;
+
+  /* Enable interrupts back */
+  if (!prim) __enable_irq();
+
+  return ret;
 }
 
 uint16_t RXSerialfifolevel1()
 {
-  uint32_t tail = RXSerialfifotail1;
-  uint32_t head = RXSerialfifohead1;
+
+  int16_t ret;
+  uint32_t prim;
+
+  /* Do some stuff here which can be interrupted */
+
+  /* Read PRIMASK register, check interrupt status before you disable them */
+  /* Returns 0 if they are enabled, or non-zero if disabled */
+  prim = __get_PRIMASK2();
+
+  /* Disable interrupts */
+  __disable_irq();
+
+#if 0
+
+  int32_t tail = RXSerialfifotail1;
+  int32_t head = RXSerialfifohead1;
 
   if (tail > head)
-    return RX_SERIAL_FIFO_SIZE + head - tail;
+  {
+    ret =  RX_SERIAL_FIFO_SIZE + head - tail;
+  }
   else
-    return head - tail;
+  {
+    ret = head - tail;
+  }
+#else
+  ret = RXSerialItemCtr1;
+#endif
+
+  /* Enable interrupts back */
+  if (!prim) __enable_irq();
+  return ret;
+
 }
 
 // Flushes the transmit shift register
@@ -113,12 +170,14 @@ uint8_t TXSerialfifoput1(uint8_t next)
   if (TXSerialfifolevel1() < TX_SERIAL_FIFO_SIZE) {
     TXSerialfifo1[TXSerialfifohead1] = next;
 
+
     TXSerialfifohead1++;
     if (TXSerialfifohead1 >= TX_SERIAL_FIFO_SIZE)
       TXSerialfifohead1 = 0U;
 
     // make sure transmit interrupts are enabled as long as there is data to send
     USART_ITConfig(USART1, USART_IT_TXE, ENABLE);
+
     return 1U;
   } else {
     return 0U; // signal an overflow occurred by returning a zero count
@@ -136,6 +195,8 @@ void USART1_IRQHandler()
       RXSerialfifo1[RXSerialfifohead1] = c;
 
       RXSerialfifohead1++;
+      RXSerialItemCtr1++;
+
       if (RXSerialfifohead1 >= RX_SERIAL_FIFO_SIZE)
         RXSerialfifohead1 = 0U;
     } else {
@@ -187,7 +248,7 @@ void InitUSART1(int speed)
   GPIO_InitStructure.GPIO_Pin   = GPIO_Pin_9;       //  Tx
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
   GPIO_Init(GPIOA, &GPIO_InitStructure);
-  
+
     GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_IN_FLOATING;
   GPIO_InitStructure.GPIO_Pin   = GPIO_Pin_10;       //  Rx
   GPIO_Init(GPIOA, &GPIO_InitStructure);
@@ -202,8 +263,10 @@ void InitUSART1(int speed)
   USART_InitStructure.USART_Mode       = USART_Mode_Rx | USART_Mode_Tx;
   USART_Init(USART1, &USART_InitStructure);
 
-  USART_ITConfig(USART1, USART_IT_RXNE, ENABLE);
-  
+  USART_ITConfig(USART1, USART_IT_RXNE , ENABLE);
+  USART_ITConfig(USART1, USART_IT_NE, ENABLE);
+  USART_ITConfig(USART1, USART_IT_FE, ENABLE);
+
   USART_Cmd(USART1, ENABLE);
 
   // initialize the fifos
@@ -221,21 +284,36 @@ uint8_t AvailUSART1()
 
 uint8_t ReadUSART1()
 {
+  static bool btoggle;
+
+  uint32_t prim;
+
+  prim = __get_PRIMASK2();
+
+  /* Disable interrupts */
+  __disable_irq();
+
   uint8_t data_c = RXSerialfifo1[RXSerialfifotail1];
 
   RXSerialfifotail1++;
+  if (RXSerialItemCtr1 > 0) RXSerialItemCtr1--;
+
   if (RXSerialfifotail1 >= RX_SERIAL_FIFO_SIZE)
     RXSerialfifotail1 = 0U;
+  /* Enable interrupts back */
+  if (!prim) __enable_irq();
 
   return data_c;
 }
 
-void WriteUSART1(const uint8_t* data, uint16_t length)
+bool WriteUSART1(const uint8_t* data, uint16_t length)
 {
+  bool ret = false;
   for (uint16_t i = 0U; i < length; i++)
-    TXSerialfifoput1(data[i]);
-    
+    ret = TXSerialfifoput1(data[i]);
+
   USART_ITConfig(USART1, USART_IT_TXE, ENABLE);
+  return ret;
 }
 
 #endif
@@ -319,7 +397,7 @@ uint8_t TXSerialfifoput2(uint8_t next)
 void USART2_IRQHandler()
 {
   uint8_t c;
-  
+
   if (USART_GetITStatus(USART2, USART_IT_RXNE)) {
     c = (uint8_t) USART_ReceiveData(USART2);
 
@@ -357,12 +435,12 @@ void USART2_IRQHandler()
 
 void InitUSART2(int speed)
 {
-  
+
   // USART2 - TXD PA2  - RXD PA3
   GPIO_InitTypeDef GPIO_InitStructure;
   USART_InitTypeDef USART_InitStructure;
   NVIC_InitTypeDef NVIC_InitStructure;
-  
+
   RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA | RCC_APB2Periph_AFIO, ENABLE);
   RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART2, ENABLE);
 
@@ -379,7 +457,7 @@ void InitUSART2(int speed)
   GPIO_InitStructure.GPIO_Pin   = GPIO_Pin_2;       //  Tx
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
   GPIO_Init(GPIOA, &GPIO_InitStructure);
-  
+
   GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_IN_FLOATING;
   GPIO_InitStructure.GPIO_Pin   = GPIO_Pin_3;       //  Rx
   GPIO_Init(GPIOA, &GPIO_InitStructure);
@@ -426,7 +504,7 @@ void WriteUSART2(const uint8_t* data, uint16_t length)
 {
   for (uint16_t i = 0U; i < length; i++)
     TXSerialfifoput2(data[i]);
-    
+
   USART_ITConfig(USART2, USART_IT_TXE, ENABLE);
 }
 
@@ -487,7 +565,7 @@ void CSerialPort::beginInt(uint8_t n, int speed)
 }
 
 int CSerialPort::availableInt(uint8_t n)
-{ 
+{
   switch (n) {
     case 1U:
     #if defined(STM32_USART1_HOST)
@@ -497,7 +575,7 @@ int CSerialPort::availableInt(uint8_t n)
     #elif defined(STM32_I2C_HOST)
       return i2c.AvailI2C();
     #endif
-    case 3U: 
+    case 3U:
     #if defined(SERIAL_REPEATER)
       return AvailUSART2();
     #elif defined(SERIAL_REPEATER_USART1)
@@ -509,7 +587,7 @@ int CSerialPort::availableInt(uint8_t n)
 }
 
 uint8_t CSerialPort::readInt(uint8_t n)
-{   
+{
   switch (n) {
     case 1U:
     #if defined(STM32_USART1_HOST)
@@ -532,12 +610,15 @@ uint8_t CSerialPort::readInt(uint8_t n)
 
 bool CSerialPort::writeInt(uint8_t n, const uint8_t* data, uint16_t length, bool flush)
 {
+  bool ret = false;
   switch (n) {
     case 1U:
     #if defined(STM32_USART1_HOST)
-      WriteUSART1(data, length);
+      ret = WriteUSART1(data, length);
       if (flush)
         TXSerialFlush1();
+      io.delay_us(2000);  ////////////////// WINNER
+
     #elif defined(STM32_USB_HOST)
       usbserial.write(data, length);
       if (flush)
@@ -560,6 +641,8 @@ bool CSerialPort::writeInt(uint8_t n, const uint8_t* data, uint16_t length, bool
     default:
       break;
   }
+  return ret;
 }
+
 
 #endif
