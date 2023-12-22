@@ -71,6 +71,8 @@ const uint8_t MMDVM_M17_EOT        = 0x49U;
 const uint8_t MMDVM_POCSAG_DATA  = 0x50U;
 
 const uint8_t MMDVM_ACK          = 0x70U;
+const uint8_t MMDVM_ACKv         = 0x71U;
+const uint8_t MMDVM_NACKv        = 0x72U;
 const uint8_t MMDVM_NAK          = 0x7FU;
 
 const uint8_t MMDVM_SERIAL       = 0x80U;
@@ -96,7 +98,7 @@ m_ptr(0U),
 m_len(0U),
 m_serial_buffer(),
 m_serial_len(0U),
-m_debug(false),
+m_debug(true),
 m_firstCal(false)
 {
 }
@@ -132,6 +134,48 @@ void CSerialPort::sendACK(uint32_t info)
 
   writeInt(1U, reply, 8);
 }
+
+// send ACK with text comment
+void CSerialPort::sendACKv(const char *format, ...)
+{
+  uint8_t reply[130U];
+
+  reply[0U] = MMDVM_FRAME_START;
+  reply[1U] = 0U;
+  reply[2U] = MMDVM_ACKv;
+
+  va_list ap;
+  va_start(ap, format);
+
+  uint8_t count = 3U;
+  count += vsnprintf((char*) &reply[count], sizeof(reply) - count, format, ap);
+  va_end(ap);
+
+  reply[1U] = count;
+  writeInt(1U, reply, count, true);
+}
+
+// send NACK with text comment
+void CSerialPort::sendNACKv(const char *format, ...)
+{
+  uint8_t reply[130U];
+
+  reply[0U] = MMDVM_FRAME_START;
+  reply[1U] = 0U;
+  reply[2U] = MMDVM_NACKv;
+
+  va_list ap;
+  va_start(ap, format);
+
+  uint8_t count = 3U;
+  count += vsnprintf((char*) &reply[count], sizeof(reply) - count, format, ap);
+  va_end(ap);
+
+  reply[1U] = count;
+  writeInt(1U, reply, count, true);
+}
+
+
 
 void CSerialPort::sendNAK(uint16_t err)
 {
@@ -566,7 +610,7 @@ void CSerialPort::process()
           case MMDVM_SET_FREQ:
             err = setFreq(m_buffer + 3U, m_len - 3U);
             if (err == 0U)
-              sendACK();
+              sendACKv("freq ok");
             else
               sendNAK(err);
             break;

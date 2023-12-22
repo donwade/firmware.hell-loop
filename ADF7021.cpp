@@ -1335,7 +1335,7 @@ void CIO::printConf()
   DEBUG2I("TX freq (Hz):", TXfreq());
   DEBUG2I("RX freq (Hz):", RXfreq());
   DEBUG2("Power REQESTED:", m_power);
-  DEBUG2("TX ENABLED:", m_bTransmitAllowed);
+  DEBUG2("Can transmit:", m_bTransmitAllowed);
   DEBUG2("DMR +1 sym dev (Hz):", devDMR());
   DEBUG2("P25 +1 sym dev (Hz):", devP25());
   DEBUG2("POCSAG dev (Hz):", devPOCSAG());

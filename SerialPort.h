@@ -79,7 +79,10 @@ private:
 
   void    sendACK();
   void    sendACK(uint32_t info);
+  void    sendACKv(const char *format, ...);
+
   void    sendNAK(uint16_t err);
+  void    sendNACKv(const char *format, ...);
   void    getStatus();
   void    getVersion();
   uint16_t setConfig(const uint8_t* data, uint8_t length);
