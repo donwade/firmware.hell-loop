@@ -85,6 +85,8 @@ const uint8_t MMDVM_DEBUG2       = 0xF2U;
 const uint8_t MMDVM_DEBUG3       = 0xF3U;
 const uint8_t MMDVM_DEBUG4       = 0xF4U;
 const uint8_t MMDVM_DEBUG5       = 0xF5U;
+const uint8_t MMDVM_PING_REQ     = 0xF6U;
+const uint8_t MMDVM_PONG_RSP     = 0xF7U;
 
 const uint8_t PROTOCOL_VERSION   = 1U;
 
@@ -107,6 +109,7 @@ m_firstCal(false)
 #define MSG_LEN		1
 #define MSG_STATE	2
 #define MSG_BUFF	3
+
 void CSerialPort::sendACK()
 {
   uint8_t reply[4U];
@@ -175,6 +178,17 @@ void CSerialPort::sendNACKv(const char *format, ...)
   writeInt(1U, reply, count, true);
 }
 
+void CSerialPort::sendPongResponse()
+{
+  uint8_t reply[4U];
+  static uint8_t count;
+
+  reply[MSG_TYPE] = MMDVM_FRAME_START;
+  reply[MSG_LEN] = 4U;
+  reply[MSG_STATE] = MMDVM_PONG_RSP;
+  reply[MSG_BUFF] = ++count;
+  writeInt(1U, reply, 4);
+}
 
 
 void CSerialPort::sendNAK(uint16_t err)
