@@ -161,8 +161,10 @@ void CIO::summaryADF7021(void)
 	ALWAYS("INTEGER_N =\t%d", REG0.INTEGER_N);
 	ALWAYS("RECIEVE ON=\t%d", REG0.RECIEVE_ON);
 	ALWAYS("UART_ENABLED=\t%d", REG0.UART_MODE_ON);
+
 	static const char *mux[8] = {"Ready", "cal-done", "lock-det", "rssi-rdy", "tx-rx", "ZERO", "FLOAT", "ONE" };
 	ALWAYS("MUXOUT_SEL=\t%s", mux[REG0.MUXOUT_SEL]);
+
 	uint32_t rfOut = PFD * (REG0.INTEGER_N + REG0.FRACTIONAL_N/(1<<15));
 	if (REG1.RF_R_DIVIDER) rfOut /= 2;
 	ALWAYS("*** rfout =\t\t%d Hz", rfOut);

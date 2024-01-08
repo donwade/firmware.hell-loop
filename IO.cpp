@@ -373,7 +373,7 @@ uint8_t CIO::setFreq(uint32_t frequency_rx, uint32_t frequency_tx, uint8_t rf_po
 
 	ALWAYS("TX IS %s on freq %lu", m_bTransmitAllowed ? _BOLDRED "ALLOWED - DANGER" _RESET: _GREEN "INHIBITED - SAFE" _RESET, frequency_tx );
 
-	return setFreqHw( frequency_rx, frequency_tx, m_bTransmitAllowed ? rf_power : 0, pocsag_freq_tx);
+ 	return setFreqHw( frequency_rx, frequency_tx, m_bTransmitAllowed ? rf_power : 0, pocsag_freq_tx);
 
 }
 

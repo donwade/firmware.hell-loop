@@ -274,7 +274,7 @@ void CSerialPort::getStatus()
   //reply[13U] = m17TX.getSpace();
   reply[13U] = 0U;
 
-  writeInt(1U, reply, 14);
+  writeInt(1U, reply, sizeof(reply)); //bug was 14 but size is 15
 }
 
 void CSerialPort::getVersion()
